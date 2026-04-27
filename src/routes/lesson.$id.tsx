@@ -58,7 +58,7 @@ function LessonPage() {
           <Home className="w-5 h-5" /> Home
         </Link>
         <div className="flex gap-1">
-          {lesson.scenes.map((_, idx) => (
+          {lesson.scenes.map((_s, idx: number) => (
             <span
               key={idx}
               className={`h-2 rounded-full transition-all ${
