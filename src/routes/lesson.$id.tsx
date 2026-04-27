@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { getLesson } from "@/features/lessons/lessonData";
+import { getLesson, type Lesson } from "@/features/lessons/lessonData";
 import { Mascot } from "@/components/cq/Mascot";
 import { SpeechBubble } from "@/components/cq/SpeechBubble";
 import { BigButton } from "@/components/cq/BigButton";
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/lesson/$id")({
 });
 
 function LessonPage() {
-  const lesson = Route.useLoaderData();
+  const lesson = Route.useLoaderData() as Lesson;
   const [i, setI] = useState(0);
   const completeScene = useGameStore((s) => s.completeScene);
   const addXp = useGameStore((s) => s.addXp);
@@ -58,7 +58,7 @@ function LessonPage() {
           <Home className="w-5 h-5" /> Home
         </Link>
         <div className="flex gap-1">
-          {lesson.scenes.map((_s, idx: number) => (
+          {lesson.scenes.map((_s, idx) => (
             <span
               key={idx}
               className={`h-2 rounded-full transition-all ${

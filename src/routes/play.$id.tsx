@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { lazy, Suspense, useState } from "react";
-import { getLesson } from "@/features/lessons/lessonData";
+import { getLesson, type Lesson } from "@/features/lessons/lessonData";
 import { BigButton } from "@/components/cq/BigButton";
 import { Mascot } from "@/components/cq/Mascot";
 import { SpeechBubble } from "@/components/cq/SpeechBubble";
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/play/$id")({
 });
 
 function PlayPage() {
-  const lesson = Route.useLoaderData();
+  const lesson = Route.useLoaderData() as Lesson;
   const challenge = lesson.challenge;
   const [code, setCode] = useState("");
   const [trail, setTrail] = useState<Step[]>([challenge.start]);
