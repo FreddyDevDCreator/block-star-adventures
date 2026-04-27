@@ -162,3 +162,12 @@
   from { opacity: 0; transform: translateX(24px); }
   to { opacity: 1; transform: translateX(0); }
 }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%, 45%, 75%  { transform: translateX(-6px); }
+  30%, 60%, 90%  { transform: translateX(6px); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px oklch(0.75 0.16 155 / 0.3); }
+  50%       { box-shadow: 0 0 22px oklch(0.75 0.16 155 / 0.7); }
+}

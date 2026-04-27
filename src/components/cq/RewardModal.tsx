@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { Mascot } from "./Mascot";
 import { BigButton } from "./BigButton";
 import { useConfetti } from "@/hooks/useConfetti";
+import { speak } from "@/services/audio";
+import { useGameStore } from "@/store/useGameStore";
 import { Coins, Sparkles, Trophy } from "lucide-react";
 
 interface RewardModalProps {
@@ -14,9 +16,19 @@ interface RewardModalProps {
 
 export function RewardModal({ open, coins, xp, badge, onClose }: RewardModalProps) {
   const fire = useConfetti();
+  const soundOn = useGameStore((s) => s.soundOn);
+
   useEffect(() => {
-    if (open) fire();
-  }, [open, fire]);
+    if (open) {
+      fire();
+      if (soundOn) {
+        const msg = badge
+          ? `Eiii! You are a champion! You collected ${coins} coins, ${xp} experience points, and you unlocked the ${badge} badge! Well done, my friend!`
+          : `Eiii! Well done! You collected ${coins} coins and ${xp} experience points! Keep going — you are doing so well!`;
+        speak(msg);
+      }
+    }
+  }, [open, fire, coins, xp, badge, soundOn]);
 
   if (!open) return null;
   return (

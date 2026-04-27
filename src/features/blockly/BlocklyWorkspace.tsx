@@ -5,17 +5,39 @@ import * as Blockly from "blockly";
 import { javascriptGenerator } from "blockly/javascript";
 import { TOOLBOX } from "./toolbox";
 
-// Define our 4 simple movement blocks once, on first import.
+// The "When Run is pressed" hat block — purely a visual anchor, emits no code.
+// Movement blocks connect under it so kids understand what counts as a program.
+const DEFAULT_WORKSPACE_XML = `
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="on_start" x="20" y="20" deletable="false" movable="true"></block>
+</xml>`.trim();
+
+// Define our movement blocks + on_start hat once, on first import.
 let blocksRegistered = false;
 function registerBlocks() {
   if (blocksRegistered) return;
   blocksRegistered = true;
 
+  // ── on_start hat block ──────────────────────────────────────────────────
+  Blockly.Blocks["on_start"] = {
+    init() {
+      this.appendDummyInput().appendField("✦ When Run is pressed");
+      this.setNextStatement(true, null);
+      this.setColour("#22c55e");
+      this.setTooltip("Blocks connected here will run when you press the Run button.");
+      this.setHelpUrl("");
+    },
+  };
+  // Hat block emits nothing — movement blocks below it emit the real code.
+  // Must use forBlock (Blockly v10+ API) — direct property assignment is ignored.
+  javascriptGenerator.forBlock["on_start"] = () => "";
+
+  // ── 4 movement blocks ────────────────────────────────────────────────────
   const moves: Array<[string, string, string, () => string]> = [
     ["move_right", "Move ▶", "#3b82f6", () => "moveRight();\n"],
-    ["move_up", "Move ▲", "#10b981", () => "moveUp();\n"],
-    ["move_left", "Move ◀", "#6366f1", () => "moveLeft();\n"],
-    ["move_down", "Move ▼", "#f59e0b", () => "moveDown();\n"],
+    ["move_up",    "Move ▲", "#10b981", () => "moveUp();\n"],
+    ["move_left",  "Move ◀", "#6366f1", () => "moveLeft();\n"],
+    ["move_down",  "Move ▼", "#f59e0b", () => "moveDown();\n"],
   ];
 
   for (const [name, label, color, gen] of moves) {
@@ -27,7 +49,8 @@ function registerBlocks() {
         this.setColour(color);
       },
     };
-    (javascriptGenerator as unknown as Record<string, () => string>)[name] = gen;
+    // forBlock is the Blockly v10 documented API for generator registration.
+    javascriptGenerator.forBlock[name] = gen;
   }
 }
 
@@ -54,13 +77,13 @@ export default function BlocklyWorkspace({ onCodeChange, initialXml }: BlocklyWo
     });
     wsRef.current = ws;
 
-    if (initialXml) {
-      try {
-        const dom = Blockly.utils.xml.textToDom(initialXml);
-        Blockly.Xml.domToWorkspace(dom, ws);
-      } catch {
-        /* ignore */
-      }
+    // Load provided XML or fall back to the default pre-placed hat block.
+    const xml = initialXml ?? DEFAULT_WORKSPACE_XML;
+    try {
+      const dom = Blockly.utils.xml.textToDom(xml);
+      Blockly.Xml.domToWorkspace(dom, ws);
+    } catch {
+      /* ignore malformed XML */
     }
 
     const emit = () => {

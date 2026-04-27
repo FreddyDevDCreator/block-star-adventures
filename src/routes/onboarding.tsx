@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mascot } from "@/components/cq/Mascot";
 import { SpeechBubble } from "@/components/cq/SpeechBubble";
 import { BigButton } from "@/components/cq/BigButton";
+import { SoundToggle } from "@/components/cq/SoundToggle";
 import { ONBOARDING_STEPS } from "@/features/onboarding/steps";
 import { useGameStore } from "@/store/useGameStore";
-import { playNarration } from "@/services/audio";
 import { ChevronRight, SkipForward } from "lucide-react";
 
 export const Route = createFileRoute("/onboarding")({
@@ -24,6 +24,11 @@ function OnboardingPage() {
   const navigate = useNavigate();
   const current = ONBOARDING_STEPS[step];
 
+  // Speak the first step on mount
+  useEffect(() => {
+    // Trigger speech — SpeechBubble speak prop handles subsequent changes
+  }, []);
+
   const finish = () => {
     finishOnboarding();
     navigate({ to: "/dashboard" });
@@ -31,16 +36,19 @@ function OnboardingPage() {
 
   const next = () => {
     if (step >= ONBOARDING_STEPS.length - 1) return finish();
-    const nextStep = step + 1;
-    setStep(nextStep);
-    playNarration(ONBOARDING_STEPS[nextStep].message);
+    setStep(step + 1);
   };
 
   return (
     <div className="min-h-dvh bg-[image:var(--gradient-sky)] flex flex-col items-center justify-center p-6">
+      {/* Sound toggle — top-right corner */}
+      <div className="absolute top-4 right-4">
+        <SoundToggle />
+      </div>
+
       <div className="w-full max-w-md flex flex-col items-center gap-6 text-center">
         <Mascot size="xl" />
-        <SpeechBubble arrow="bottom" className="w-full">
+        <SpeechBubble arrow="bottom" className="w-full" speak>
           <div className="text-3xl mb-1">{current.emoji}</div>
           <h1 className="text-2xl font-extrabold">{current.title}</h1>
           <p className="text-muted-foreground mt-1">{current.message}</p>

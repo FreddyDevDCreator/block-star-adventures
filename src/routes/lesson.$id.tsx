@@ -4,6 +4,7 @@ import { getLesson, type Lesson } from "@/features/lessons/lessonData";
 import { Mascot } from "@/components/cq/Mascot";
 import { SpeechBubble } from "@/components/cq/SpeechBubble";
 import { BigButton } from "@/components/cq/BigButton";
+import { SoundToggle } from "@/components/cq/SoundToggle";
 import { useGameStore } from "@/store/useGameStore";
 import { ChevronLeft, ChevronRight, Code2, Home } from "lucide-react";
 
@@ -67,9 +68,12 @@ function LessonPage() {
             />
           ))}
         </div>
-        <span className="text-sm font-bold text-muted-foreground">
-          {i + 1}/{lesson.scenes.length}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-muted-foreground">
+            {i + 1}/{lesson.scenes.length}
+          </span>
+          <SoundToggle />
+        </div>
       </header>
 
       <main className="flex-1 px-4 pb-4 flex flex-col items-center justify-center max-w-md mx-auto w-full">
@@ -85,7 +89,8 @@ function LessonPage() {
 
         <div className="mt-4 flex items-end gap-3 w-full animate-fade-in" key={`b-${i}`}>
           <Mascot size="sm" bob={false} />
-          <SpeechBubble className="flex-1">{scene.bubble}</SpeechBubble>
+          {/* speak=true auto-narrates the bubble text whenever the scene changes */}
+          <SpeechBubble className="flex-1" speak>{scene.bubble}</SpeechBubble>
         </div>
       </main>
 

@@ -13,6 +13,7 @@ export interface UserProfile {
   completedChallenges: string[];
   attempts: Record<string, number>;
   onboarded: boolean;
+  soundOn: boolean;
 }
 
 const DB_NAME = "codequest";
@@ -44,13 +45,16 @@ export const defaultProfile: UserProfile = {
   completedChallenges: [],
   attempts: {},
   onboarded: false,
+  soundOn: true,
 };
 
 export async function loadProfile(): Promise<UserProfile> {
   const db = await getDB();
   if (!db) return defaultProfile;
   const data = (await db.get(STORE, "me")) as UserProfile | undefined;
-  return data ?? defaultProfile;
+  if (!data) return defaultProfile;
+  // Back-compat: older profiles lack soundOn — default to true
+  return { ...data, soundOn: data.soundOn ?? true };
 }
 
 export async function saveProfile(profile: UserProfile): Promise<void> {

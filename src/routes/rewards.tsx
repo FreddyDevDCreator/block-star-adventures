@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useGameStore } from "@/store/useGameStore";
 import { Mascot } from "@/components/cq/Mascot";
+import { SoundToggle } from "@/components/cq/SoundToggle";
 import { Trophy, Home } from "lucide-react";
 
 export const Route = createFileRoute("/rewards")({
@@ -24,7 +25,7 @@ function RewardsPage() {
             <Home className="w-5 h-5" /> Home
           </Link>
           <h1 className="text-2xl font-extrabold">My Trophy Shelf</h1>
-          <span className="w-12" />
+          <SoundToggle />
         </header>
 
         <div className="flex justify-center mb-4">

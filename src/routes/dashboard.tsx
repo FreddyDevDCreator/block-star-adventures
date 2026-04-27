@@ -3,6 +3,7 @@ import { Mascot } from "@/components/cq/Mascot";
 import { BigButton } from "@/components/cq/BigButton";
 import { StatChip } from "@/components/cq/StatChip";
 import { ProgressBar } from "@/components/cq/ProgressBar";
+import { SoundToggle } from "@/components/cq/SoundToggle";
 import { useGameStore, xpForNextLevel, xpProgress } from "@/store/useGameStore";
 import { LESSONS, firstLesson } from "@/features/lessons/lessonData";
 import { Coins, Sparkles, Trophy, Play, BookOpen } from "lucide-react";
@@ -30,7 +31,10 @@ function Dashboard() {
             <p className="text-sm text-muted-foreground font-semibold">Welcome back!</p>
             <h1 className="text-2xl font-extrabold">Hey, Explorer 👋</h1>
           </div>
-          <Mascot size="md" />
+          <div className="flex items-center gap-2">
+            <SoundToggle />
+            <Mascot size="md" />
+          </div>
         </header>
 
         <section className="rounded-3xl bg-card border-2 border-border p-5 shadow-[var(--shadow-soft)]">
