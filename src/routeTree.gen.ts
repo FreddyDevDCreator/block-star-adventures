@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RewardsRouteImport } from './routes/rewards'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlayIdRouteImport } from './routes/play.$id'
@@ -24,6 +25,11 @@ const RewardsRoute = RewardsRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JourneyRoute = JourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -50,6 +56,7 @@ const LessonIdRoute = LessonIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/journey': typeof JourneyRoute
   '/onboarding': typeof OnboardingRoute
   '/rewards': typeof RewardsRoute
   '/lesson/$id': typeof LessonIdRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/journey': typeof JourneyRoute
   '/onboarding': typeof OnboardingRoute
   '/rewards': typeof RewardsRoute
   '/lesson/$id': typeof LessonIdRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/journey': typeof JourneyRoute
   '/onboarding': typeof OnboardingRoute
   '/rewards': typeof RewardsRoute
   '/lesson/$id': typeof LessonIdRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/journey'
     | '/onboarding'
     | '/rewards'
     | '/lesson/$id'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
+    | '/journey'
     | '/onboarding'
     | '/rewards'
     | '/lesson/$id'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/journey'
     | '/onboarding'
     | '/rewards'
     | '/lesson/$id'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  JourneyRoute: typeof JourneyRoute
   OnboardingRoute: typeof OnboardingRoute
   RewardsRoute: typeof RewardsRoute
   LessonIdRoute: typeof LessonIdRoute
@@ -122,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/journey': {
+      id: '/journey'
+      path: '/journey'
+      fullPath: '/journey'
+      preLoaderRoute: typeof JourneyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  JourneyRoute: JourneyRoute,
   OnboardingRoute: OnboardingRoute,
   RewardsRoute: RewardsRoute,
   LessonIdRoute: LessonIdRoute,

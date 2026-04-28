@@ -3,7 +3,7 @@ import { Mascot } from "./Mascot";
 import { BigButton } from "./BigButton";
 import { useConfetti } from "@/hooks/useConfetti";
 import { speak } from "@/services/audio";
-import { useGameStore } from "@/store/useGameStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { Coins, Sparkles, Trophy } from "lucide-react";
 
 interface RewardModalProps {
@@ -16,7 +16,7 @@ interface RewardModalProps {
 
 export function RewardModal({ open, coins, xp, badge, onClose }: RewardModalProps) {
   const fire = useConfetti();
-  const soundOn = useGameStore((s) => s.soundOn);
+  const soundOn = useSettingsStore((s) => s.soundOn);
 
   useEffect(() => {
     if (open) {

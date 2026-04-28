@@ -33,10 +33,10 @@ export function SpeechBubble({ children, className, arrow = "left", speak = fals
     >
       {children}
       {arrow === "left" && (
-        <span className="absolute -left-3 top-6 w-6 h-6 rotate-45 bg-card border-l-2 border-b-2 border-primary/20" />
+        <span className="absolute -left-3 top-6 w-6 h-6 rotate-45 bg-card border-l-2 border-b-2 border-primary/20 pointer-events-none" />
       )}
       {arrow === "bottom" && (
-        <span className="absolute left-8 -bottom-3 w-6 h-6 rotate-45 bg-card border-r-2 border-b-2 border-primary/20" />
+        <span className="absolute left-8 -bottom-3 w-6 h-6 rotate-45 bg-card border-r-2 border-b-2 border-primary/20 pointer-events-none" />
       )}
     </div>
   );

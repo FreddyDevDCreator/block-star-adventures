@@ -11,21 +11,35 @@ let preferredVoice: SpeechSynthesisVoice | null = null;
 // in Nigeria, Ghana, Kenya, South Africa, Tanzania, Uganda, etc.
 const AFRICAN_LOCALES = ["en-NG", "en-GH", "en-KE", "en-ZA", "en-TZ", "en-UG"];
 
+function looksFemale(v: SpeechSynthesisVoice): boolean {
+  // Web Speech doesn't standardize gender; we infer from common voice names.
+  // Examples: "Google UK English Female", "Microsoft Ada Online (Natural) - English (Nigeria)"
+  return /female|woman|girls?|lady/i.test(v.name);
+}
+
 function pickVoice(): SpeechSynthesisVoice | null {
   if (typeof speechSynthesis === "undefined") return null;
   const voices = speechSynthesis.getVoices();
   if (!voices.length) return null;
 
+  const byLocale = (pred: (v: SpeechSynthesisVoice) => boolean) => pred;
+  const byLocaleFemaleFirst = (pred: (v: SpeechSynthesisVoice) => boolean) => [
+    (v: SpeechSynthesisVoice) => pred(v) && looksFemale(v),
+    (v: SpeechSynthesisVoice) => pred(v),
+  ];
+
   const preferences: Array<(v: SpeechSynthesisVoice) => boolean> = [
-    // 1. Any dedicated African-English locale voice
-    (v) => AFRICAN_LOCALES.some((loc) => v.lang === loc),
-    // 2. Any voice whose lang starts with an African locale prefix
-    (v) => AFRICAN_LOCALES.some((loc) => v.lang.startsWith(loc)),
-    // 3. British English — the prestige accent familiar across Anglophone Africa
-    (v) => v.lang === "en-GB" && /google/i.test(v.name),
-    (v) => v.lang === "en-GB",
-    // 4. Any other English as last resort
-    (v) => v.lang.startsWith("en"),
+    // 1. Nigerian English (prefer female first)
+    ...byLocaleFemaleFirst(byLocale((v) => v.lang === "en-NG" || v.lang.startsWith("en-NG"))),
+    // 2. Other African English locales (prefer female first)
+    ...byLocaleFemaleFirst(
+      byLocale((v) => AFRICAN_LOCALES.some((loc) => v.lang === loc || v.lang.startsWith(loc))),
+    ),
+    // 3. British English — common fallback across Anglophone Africa (prefer female first)
+    ...byLocaleFemaleFirst(byLocale((v) => v.lang === "en-GB" && /google/i.test(v.name))),
+    ...byLocaleFemaleFirst(byLocale((v) => v.lang === "en-GB")),
+    // 4. Any other English as last resort (prefer female first)
+    ...byLocaleFemaleFirst(byLocale((v) => v.lang.startsWith("en"))),
   ];
 
   for (const test of preferences) {

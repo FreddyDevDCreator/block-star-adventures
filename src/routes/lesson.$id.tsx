@@ -1,11 +1,11 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { getLesson, type Lesson } from "@/features/lessons/lessonData";
+import { fetchLesson, getPrimaryChallenge, type Lesson } from "@/services/lessons";
 import { Mascot } from "@/components/cq/Mascot";
 import { SpeechBubble } from "@/components/cq/SpeechBubble";
 import { BigButton } from "@/components/cq/BigButton";
 import { SoundToggle } from "@/components/cq/SoundToggle";
-import { useGameStore } from "@/store/useGameStore";
+import { useProgressStore } from "@/store/useProgressStore";
 import { ChevronLeft, ChevronRight, Code2, Home } from "lucide-react";
 
 export const Route = createFileRoute("/lesson/$id")({
@@ -15,10 +15,12 @@ export const Route = createFileRoute("/lesson/$id")({
       { name: "description", content: `Read the ${params.id} comic.` },
     ],
   }),
-  loader: ({ params }) => {
-    const lesson = getLesson(params.id);
-    if (!lesson) throw notFound();
-    return lesson;
+  loader: async ({ params }) => {
+    try {
+      return await fetchLesson(params.id);
+    } catch {
+      throw notFound();
+    }
   },
   component: LessonPage,
   notFoundComponent: () => (
@@ -36,11 +38,13 @@ export const Route = createFileRoute("/lesson/$id")({
 function LessonPage() {
   const lesson = Route.useLoaderData() as Lesson;
   const [i, setI] = useState(0);
-  const completeScene = useGameStore((s) => s.completeScene);
-  const addXp = useGameStore((s) => s.addXp);
+  const completeScene = useProgressStore((s) => s.completeScene);
+  const addXp = useProgressStore((s) => s.addXp);
   const navigate = useNavigate();
-  const scene = lesson.scenes[i];
-  const isLast = i === lesson.scenes.length - 1;
+  const primary = getPrimaryChallenge(lesson);
+  const scenes = primary?.scenes ?? [];
+  const scene = scenes[i];
+  const isLast = i === scenes.length - 1;
 
   const goNext = () => {
     completeScene(`${lesson.id}:${i}`);
@@ -59,7 +63,7 @@ function LessonPage() {
           <Home className="w-5 h-5" /> Home
         </Link>
         <div className="flex gap-1">
-          {lesson.scenes.map((_s, idx) => (
+          {scenes.map((_s, idx) => (
             <span
               key={idx}
               className={`h-2 rounded-full transition-all ${
@@ -70,27 +74,25 @@ function LessonPage() {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-muted-foreground">
-            {i + 1}/{lesson.scenes.length}
+            {Math.min(i + 1, Math.max(1, scenes.length))}/{Math.max(1, scenes.length)}
           </span>
           <SoundToggle />
         </div>
       </header>
 
       <main className="flex-1 px-4 pb-4 flex flex-col items-center justify-center max-w-md mx-auto w-full">
-        <div
-          key={i}
-          className={`w-full aspect-[4/3] rounded-3xl border-4 border-card shadow-[var(--shadow-pop)] grid place-items-center text-[120px] bg-gradient-to-br ${scene.bg} animate-fade-in`}
-        >
-          <span className="drop-shadow-lg">{scene.panelEmoji}</span>
+        <div className="w-full rounded-3xl border-4 border-card shadow-[var(--shadow-pop)] bg-card p-6 animate-fade-in">
+          <div className="text-xs text-muted-foreground font-semibold">SCENE</div>
+          <div className="mt-2 text-xl font-extrabold">{scene?.speaker ?? "Coach"}</div>
+          <p className="mt-3 text-base font-bold text-foreground">
+            {scene?.text ?? "Loading…"}
+          </p>
         </div>
-        <p key={`t-${i}`} className="mt-4 text-center text-lg font-bold animate-fade-in">
-          {scene.text}
-        </p>
 
         <div className="mt-4 flex items-end gap-3 w-full animate-fade-in" key={`b-${i}`}>
           <Mascot size="sm" bob={false} />
           {/* speak=true auto-narrates the bubble text whenever the scene changes */}
-          <SpeechBubble className="flex-1" speak>{scene.bubble}</SpeechBubble>
+          <SpeechBubble className="flex-1" speak>{scene?.text ?? ""}</SpeechBubble>
         </div>
       </main>
 

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useGameStore } from "@/store/useGameStore";
+import { useProgressStore } from "@/store/useProgressStore";
 import { Mascot } from "@/components/cq/Mascot";
 import { SoundToggle } from "@/components/cq/SoundToggle";
 import { Trophy, Home } from "lucide-react";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/rewards")({
 });
 
 function RewardsPage() {
-  const badges = useGameStore((s) => s.badges);
+  const badges = useProgressStore((s) => s.badges);
 
   return (
     <div className="min-h-dvh bg-[image:var(--gradient-sky)] p-4">

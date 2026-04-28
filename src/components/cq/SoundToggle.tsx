@@ -1,7 +1,8 @@
-// Small mute/unmute button for headers. Reads soundOn from the global store
-// and calls toggleSound on click.
+// Small mute/unmute button for headers.
+// Reads soundOn and toggleSound from useSettingsStore
+// (Step 2 of architecture refactor — decoupled from game/progress state).
 import { Volume2, VolumeX } from "lucide-react";
-import { useGameStore } from "@/store/useGameStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { stopSpeaking } from "@/services/audio";
 import { cn } from "@/lib/utils";
 
@@ -10,8 +11,8 @@ interface SoundToggleProps {
 }
 
 export function SoundToggle({ className }: SoundToggleProps) {
-  const soundOn = useGameStore((s) => s.soundOn);
-  const toggleSound = useGameStore((s) => s.toggleSound);
+  const soundOn = useSettingsStore((s) => s.soundOn);
+  const toggleSound = useSettingsStore((s) => s.toggleSound);
 
   const handleClick = () => {
     if (soundOn) stopSpeaking();
