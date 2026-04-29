@@ -4,6 +4,7 @@ import { useProgressStore } from "@/store/useProgressStore";
 import { Mascot } from "@/components/cq/Mascot";
 import { SoundToggle } from "@/components/cq/SoundToggle";
 import { Play, Trophy, Home } from "lucide-react";
+import { PageShell } from "@/components/cq/PageShell";
 
 export const Route = createFileRoute("/journey")({
   head: () => ({
@@ -34,7 +35,7 @@ function JourneyPage() {
   );
 
   return (
-    <div className="min-h-dvh bg-[image:var(--gradient-sky)] p-4 sm:p-6">
+    <PageShell>
       <div className="max-w-md mx-auto flex flex-col gap-4">
         <header className="flex items-center justify-between">
           <Link to="/dashboard" className="inline-flex items-center gap-1 font-bold">
@@ -57,7 +58,7 @@ function JourneyPage() {
           {levels.map((lvl, idx) => (
             <li key={`${lvl.lessonId}:${lvl.challengeId}`}>
               <Link
-                to="/play/$id"
+                to="/lesson/$id"
                 params={{ id: lvl.lessonId }}
                 search={{ c: lvl.challengeId }}
                 className={[
@@ -85,7 +86,7 @@ function JourneyPage() {
           ))}
         </ul>
       </div>
-    </div>
+    </PageShell>
   );
 }
 

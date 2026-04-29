@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Mascot } from "@/components/cq/Mascot";
 import { BigButton } from "@/components/cq/BigButton";
 import { StatChip } from "@/components/cq/StatChip";
@@ -6,6 +6,7 @@ import { ProgressBar } from "@/components/cq/ProgressBar";
 import { SoundToggle } from "@/components/cq/SoundToggle";
 import { StatsCard } from "@/components/cq/StatsCard";
 import { SyncStatus } from "@/components/cq/SyncStatus";
+import { PageShell } from "@/components/cq/PageShell";
 import { useProgressStore, xpForNextLevel, xpProgress } from "@/store/useProgressStore";
 import { useUserStore } from "@/store/useUserStore";
 import { fetchLessons, getPrimaryChallenge, type Lesson } from "@/services/lessons";
@@ -16,7 +17,8 @@ import {
   getSuccessRate,
 } from "@/features/progress/selectors";
 import { getImprovementHint, getLearningStatus } from "@/features/progress/interpretation";
-import { Coins, Sparkles, Trophy, Play, BookOpen, Star, Timer, Rocket } from "lucide-react";
+import { Coins, Sparkles, Trophy, Play, BookOpen, Star, Timer, Rocket, Map, Award } from "lucide-react";
+import { queueNarration } from "@/services/narrationQueue";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -33,15 +35,27 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function Dashboard() {
+  const navigate = useNavigate();
   const { coins, xp, level, badges, completedScenes } = useProgressStore();
   const attempts = useProgressStore((s) => s.attempts);
   const name = useUserStore((s) => s.name);
   const lessons = Route.useLoaderData() as Lesson[];
-  const lesson = lessons[0];
+  const fallbackLesson = lessons[0];
   const progress = xpProgress(xp);
-  const primary = lesson ? getPrimaryChallenge(lesson) : null;
   const lastAttempt = attempts.length ? attempts[attempts.length - 1] : null;
-  const challengeId = lastAttempt?.challengeId ?? primary?.id ?? "";
+  const fallbackPrimary = fallbackLesson ? getPrimaryChallenge(fallbackLesson) : null;
+  const challengeId = lastAttempt?.challengeId ?? fallbackPrimary?.id ?? "";
+
+  const currentLesson =
+    lessons.find((l) => (l.challenges ?? []).some((ch) => ch.id === challengeId)) ?? fallbackLesson;
+
+  const currentChallenge =
+    currentLesson?.challenges.find((ch) => ch.id === challengeId) ?? (currentLesson ? getPrimaryChallenge(currentLesson) : null);
+
+  const scenesTotal = currentChallenge?.scenes?.length ?? 0;
+  const scenesDone = currentLesson && currentChallenge
+    ? completedScenes.filter((k) => k.startsWith(`${currentLesson.id}:${currentChallenge.id}:`)).length
+    : 0;
 
   const successRate = getSuccessRate(attempts, challengeId);
   const avgTimeMs = getAverageTime(attempts, challengeId);
@@ -54,7 +68,7 @@ function Dashboard() {
   const seconds = Math.round(avgTimeMs / 1000);
 
   return (
-    <div className="min-h-dvh bg-[image:var(--gradient-sky)] p-4 sm:p-6">
+    <PageShell>
       <div className="max-w-md mx-auto flex flex-col gap-5">
         <header className="flex items-center justify-between">
           <div>
@@ -111,19 +125,28 @@ function Dashboard() {
             <h2 className="font-extrabold text-lg">Today's Adventure</h2>
             <BookOpen className="w-5 h-5 text-muted-foreground" />
           </div>
-          <p className="font-bold text-foreground">{lesson?.title ?? "No lessons yet"}</p>
-          <p className="text-sm text-muted-foreground">{lesson?.summary ?? ""}</p>
+          <p className="font-bold text-foreground">{currentLesson?.title ?? "No lessons yet"}</p>
+          <p className="text-sm text-muted-foreground">{currentLesson?.summary ?? ""}</p>
           <div className="mt-2 text-xs text-muted-foreground">
-            {lesson
-              ? `${completedScenes.filter((k) => k.startsWith(lesson.id)).length}/${(primary?.scenes?.length ?? 0)} scenes`
-              : ""}
+            {currentLesson ? `${scenesDone}/${scenesTotal} scenes` : ""}
           </div>
-          {lesson && (
-            <Link to="/lesson/$id" params={{ id: lesson.id }} className="block mt-4">
-              <BigButton className="w-full" icon={<Play className="w-5 h-5" />}>
+          {currentLesson && currentChallenge && (
+            <div className="block mt-4">
+              <BigButton
+                className="w-full"
+                icon={<Play className="w-5 h-5" />}
+                onClick={() => {
+                  queueNarration("Welcome back! Let’s continue your next mission.");
+                  navigate({
+                    to: "/lesson/$id",
+                    params: { id: currentLesson.id },
+                    search: { c: currentChallenge.id },
+                  });
+                }}
+              >
                 Continue Learning
               </BigButton>
-            </Link>
+            </div>
           )}
         </section>
 
@@ -151,16 +174,21 @@ function Dashboard() {
           </ul>
         </section>
 
-        <Link to="/rewards" className="self-center text-sm font-bold text-primary underline-offset-4 hover:underline">
-          View my badges →
-        </Link>
-
-        <Link to="/journey" className="self-center text-sm font-bold text-primary underline-offset-4 hover:underline">
-          Open my journey map →
-        </Link>
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link to="/journey" className="block">
+            <BigButton className="w-full" icon={<Map className="w-5 h-5" />}>
+              Journey Map
+            </BigButton>
+          </Link>
+          <Link to="/rewards" className="block">
+            <BigButton variant="accent" className="w-full" icon={<Award className="w-5 h-5" />}>
+              My Badges
+            </BigButton>
+          </Link>
+        </section>
 
         <SyncStatus />
       </div>
-    </div>
+    </PageShell>
   );
 }

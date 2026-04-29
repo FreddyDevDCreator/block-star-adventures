@@ -19,10 +19,13 @@ import { computeReward } from "@/features/progress/rewards";
 import { syncAttempts } from "@/services/sync";
 import { useUserStore } from "@/store/useUserStore";
 import { SyncStatus } from "@/components/cq/SyncStatus";
+import { PageShell } from "@/components/cq/PageShell";
 import { Home, Lightbulb, Play, RotateCcw } from "lucide-react";
-import { playSfx } from "@/services/audio";
+import { narrate, playSfx } from "@/services/audio";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { fetchLessons, getNextLevel } from "@/services/lessons";
+import { queueNarration } from "@/services/narrationQueue";
 
 // Blockly is heavy — lazy load so it stays out of the main bundle.
 const BlocklyWorkspace = lazy(() => import("@/features/blockly/BlocklyWorkspace"));
@@ -64,7 +67,7 @@ function directionalFeedback(finalPos: Step, goalPos: Step): string {
 
   return lines.length
     ? lines.join(" ")
-    : "Hmm! Keep changing the blocks — you will find the right answer, I know it!";
+    : "Hmm! Try small changes: add one block, then run again. You’ve got this!";
 }
 
 function PlayPage() {
@@ -149,14 +152,18 @@ function PlayPage() {
 
     if (win) {
       playSfx("success");
-      setFeedback({ kind: "ok", msg: "Eiii, you did it! I knew you could fly me to the Moon!" });
+      const msg = "Eiii, you did it! I knew you could fly me to the Moon!";
+      setFeedback({ kind: "ok", msg });
+      void narrate(msg);
       setReward(true);
     } else {
       playSfx("error");
+      const msg = directionalFeedback(result.finalPos, challenge.goalPos);
       setFeedback({
         kind: "err",
-        msg: directionalFeedback(result.finalPos, challenge.goalPos),
+        msg,
       });
+      void narrate(msg);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attempts, code, challenge, isGrid, recordAttempt, runStartedAt, startStep, userId]);
@@ -167,10 +174,13 @@ function PlayPage() {
     // Guard: empty code → no blocks connected under the hat
     if (!code.trim()) {
       playSfx("error");
+      const msg =
+        "Hei! Please drag some Move blocks and snap them under ✦ When Run is pressed first — then we can fly!";
       setFeedback({
         kind: "err",
-        msg: "Hei! Please drag some Move blocks and snap them under ✦ When Run is pressed first — then we can fly! 🧩",
+        msg,
       });
+      void narrate(msg);
       return;
     }
 
@@ -184,6 +194,7 @@ function PlayPage() {
     if (result.error) {
       playSfx("error");
       setFeedback({ kind: "err", msg: result.error });
+      void narrate(result.error);
       const createdAt = Date.now();
       recordAttempt({
         id: makeAttemptId(),
@@ -253,10 +264,14 @@ function PlayPage() {
       for (const b of r.badges) unlockBadge(b);
       setRewardData({ coins: r.coins, xp: r.xp, badge: r.badges[0] });
       if (userId) void syncAttempts(userId);
-      setFeedback({ kind: "ok", msg: "Eiii! Correct! You are learning fast!" });
+      const msg = "Eiii! Correct! You are learning fast!";
+      setFeedback({ kind: "ok", msg });
+      void narrate(msg);
       setReward(true);
     } else {
-      setFeedback({ kind: "err", msg: "Not yet — try again, you can do it!" });
+      const msg = "Not yet — try again, you can do it!";
+      setFeedback({ kind: "err", msg });
+      void narrate(msg);
     }
   };
 
@@ -271,7 +286,7 @@ function PlayPage() {
       : "🤔 " + feedback.msg;
 
   return (
-    <div className="min-h-dvh bg-[image:var(--gradient-sky)] flex flex-col">
+    <PageShell>
       <header className="flex items-center justify-between p-4">
         <Link to="/lesson/$id" params={{ id: lesson.id }} className="inline-flex items-center gap-1 font-bold">
           <Home className="w-5 h-5" /> Lesson
@@ -315,7 +330,7 @@ function PlayPage() {
                         setQuizAnswer(c.id);
                       }}
                       className={[
-                        "text-left rounded-2xl border-2 px-4 py-3 font-bold transition-colors",
+                        "text-left rounded-2xl border-2 px-5 py-4 min-h-14 font-bold text-base sm:text-lg transition-colors flex items-center",
                         quizAnswer === c.id ? "border-primary bg-primary/10" : "border-border bg-card",
                       ].join(" ")}
                     >
@@ -347,7 +362,7 @@ function PlayPage() {
           )}
           <div className="flex items-center gap-2">
             <Mascot size="sm" bob={animating} />
-            <SpeechBubble className="flex-1 text-sm" arrow="left" speak={!animating}>
+            <SpeechBubble className="flex-1 text-sm" arrow="left">
               {feedbackText}
             </SpeechBubble>
           </div>
@@ -432,11 +447,26 @@ function PlayPage() {
         coins={rewardData.coins}
         xp={rewardData.xp}
         badge={rewardData.badge}
-        onClose={() => {
+        onClose={async () => {
           setReward(false);
-          navigate({ to: "/dashboard" });
+          try {
+            const lessons = await fetchLessons();
+            const next = getNextLevel(lessons, lesson.id, challenge.id);
+            if (next) {
+              queueNarration("Great job! Next mission loading now.");
+              navigate({
+                to: "/lesson/$id",
+                params: { id: next.lessonId },
+                search: { c: next.challengeId },
+              });
+              return;
+            }
+          } catch {
+            // ignore and fall back
+          }
+          navigate({ to: "/journey" });
         }}
       />
-    </div>
+    </PageShell>
   );
 }

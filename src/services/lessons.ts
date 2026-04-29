@@ -59,3 +59,26 @@ export async function fetchLesson(lessonId: string): Promise<Lesson> {
   return await apiFetch<Lesson>(`/lessons/${encodeURIComponent(lessonId)}`);
 }
 
+export type NextLevel = { lessonId: string; challengeId: string };
+
+export function getNextLevel(
+  lessons: Lesson[],
+  lessonId: string,
+  challengeId: string,
+): NextLevel | null {
+  const li = lessons.findIndex((l) => l.id === lessonId);
+  if (li < 0) return null;
+  const lesson = lessons[li];
+  const ci = (lesson.challenges ?? []).findIndex((c) => c.id === challengeId);
+  if (ci < 0) return null;
+
+  const nextInLesson = lesson.challenges?.[ci + 1];
+  if (nextInLesson) return { lessonId: lesson.id, challengeId: nextInLesson.id };
+
+  const nextLesson = lessons[li + 1];
+  const nextChallenge = nextLesson?.challenges?.[0];
+  if (nextLesson && nextChallenge) return { lessonId: nextLesson.id, challengeId: nextChallenge.id };
+
+  return null;
+}
+

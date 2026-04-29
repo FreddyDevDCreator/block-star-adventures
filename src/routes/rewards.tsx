@@ -3,6 +3,7 @@ import { useProgressStore } from "@/store/useProgressStore";
 import { Mascot } from "@/components/cq/Mascot";
 import { SoundToggle } from "@/components/cq/SoundToggle";
 import { Trophy, Home } from "lucide-react";
+import { PageShell } from "@/components/cq/PageShell";
 
 export const Route = createFileRoute("/rewards")({
   head: () => ({
@@ -18,7 +19,7 @@ function RewardsPage() {
   const badges = useProgressStore((s) => s.badges);
 
   return (
-    <div className="min-h-dvh bg-[image:var(--gradient-sky)] p-4">
+    <PageShell>
       <div className="max-w-md mx-auto">
         <header className="flex items-center justify-between mb-4">
           <Link to="/dashboard" className="inline-flex items-center gap-1 font-bold">
@@ -52,6 +53,6 @@ function RewardsPage() {
           </ul>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 }

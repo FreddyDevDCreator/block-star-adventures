@@ -17,6 +17,12 @@ function looksFemale(v: SpeechSynthesisVoice): boolean {
   return /female|woman|girls?|lady/i.test(v.name);
 }
 
+function isAfricanNamedVoice(v: SpeechSynthesisVoice): boolean {
+  // Some platforms don't expose African locales via `lang`, but the voice name
+  // often contains region info (e.g. "English (Nigeria)").
+  return /(nigeria|ghana|kenya|south africa|tanzania|uganda|africa)/i.test(v.name);
+}
+
 function pickVoice(): SpeechSynthesisVoice | null {
   if (typeof speechSynthesis === "undefined") return null;
   const voices = speechSynthesis.getVoices();
@@ -31,10 +37,14 @@ function pickVoice(): SpeechSynthesisVoice | null {
   const preferences: Array<(v: SpeechSynthesisVoice) => boolean> = [
     // 1. Nigerian English (prefer female first)
     ...byLocaleFemaleFirst(byLocale((v) => v.lang === "en-NG" || v.lang.startsWith("en-NG"))),
+    // 1b. Nigerian named voices (prefer female first)
+    ...byLocaleFemaleFirst(byLocale((v) => /nigeria/i.test(v.name))),
     // 2. Other African English locales (prefer female first)
     ...byLocaleFemaleFirst(
       byLocale((v) => AFRICAN_LOCALES.some((loc) => v.lang === loc || v.lang.startsWith(loc))),
     ),
+    // 2b. Other African named voices (prefer female first)
+    ...byLocaleFemaleFirst(byLocale((v) => isAfricanNamedVoice(v))),
     // 3. British English — common fallback across Anglophone Africa (prefer female first)
     ...byLocaleFemaleFirst(byLocale((v) => v.lang === "en-GB" && /google/i.test(v.name))),
     ...byLocaleFemaleFirst(byLocale((v) => v.lang === "en-GB")),
@@ -77,9 +87,26 @@ export function speak(text: string, opts: SpeakOptions = {}): void {
   // Use the matched voice's own locale so the engine applies correct prosody;
   // fall back to en-GB (closer to African English than en-US).
   utt.lang = preferredVoice?.lang ?? "en-GB";
-  utt.pitch = opts.pitch ?? 1.05;
-  utt.rate  = opts.rate  ?? 0.88;
+  // Slightly lower pitch + slightly faster rate reads less “posh” on many devices.
+  utt.pitch = opts.pitch ?? 1.0;
+  utt.rate  = opts.rate  ?? 0.92;
   speechSynthesis.speak(utt);
+}
+
+export async function narrate(text: string, opts: SpeakOptions = {}): Promise<void> {
+  const mode = (import.meta.env.VITE_TTS_MODE || "browser") as "browser" | "remote";
+  if (mode === "remote") {
+    try {
+      const { narrateRemote } = await import("./narration");
+      await narrateRemote(text);
+      return;
+    } catch {
+      // Render can sleep/timeout; fall back to browser TTS instead of going silent.
+      speak(text, opts);
+      return;
+    }
+  }
+  speak(text, opts);
 }
 
 /** Alias kept for backwards-compat with onboarding.tsx */
@@ -90,6 +117,16 @@ export function playNarration(text: string): void {
 export function stopSpeaking(): void {
   if (typeof speechSynthesis === "undefined") return;
   speechSynthesis.cancel();
+}
+
+export async function stopNarration(): Promise<void> {
+  const mode = (import.meta.env.VITE_TTS_MODE || "browser") as "browser" | "remote";
+  if (mode === "remote") {
+    const { stopRemoteNarration } = await import("./narration");
+    stopRemoteNarration();
+    return;
+  }
+  stopSpeaking();
 }
 
 // ─── WebAudio SFX ──────────────────────────────────────────────────────────

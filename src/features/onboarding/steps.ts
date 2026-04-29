@@ -7,22 +7,26 @@ export interface OnboardingStep {
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     title: "Eiii, welcome!",
-    message: "I am Bolt — your coding partner! Together we will reach the moon. Are you ready, my friend?",
+    message:
+      "I’m Bolt — your rocket buddy! Today we’re helping learn to code with Bolt. Ready to take your first flight across Africa’s sky?",
     emoji: "👋",
   },
   {
-    title: "Read the story",
-    message: "Each lesson is a short picture story. Tap Next to see the next panel — easy like that!",
+    title: "Meet the story",
+    message:
+      "Every lesson is like a mini-comic. Coach will show the next scene, and you’ll level up step by step. Tap Next to continue!",
     emoji: "📖",
   },
   {
     title: "Snap the blocks",
-    message: "Drag the colourful blocks and connect them together. No writing — just clicking and snapping!",
+    message:
+      "Drag the colourful blocks and snap them together like beads on a necklace. No long writing — just play, learn, and try again!",
     emoji: "🧩",
   },
   {
     title: "Win your rewards",
-    message: "Finish the challenge and collect coins, points and badges. Show everyone what you can do!",
+    message:
+      "Finish the mission and collect coins, XP, and badges. Your progress will save automatically — even when there is no internet.",
     emoji: "🏆",
   },
 ];

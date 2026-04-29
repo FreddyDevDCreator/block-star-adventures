@@ -775,6 +775,14 @@ function RouterProvider({ router, ...rest }) {
     children: /* @__PURE__ */ jsxRuntimeExports.jsx(Matches, {})
   });
 }
+function useRouterState(opts) {
+  const contextRouter = useRouter({ warn: opts?.router === void 0 });
+  const router = opts?.router || contextRouter;
+  {
+    const state = router.stores.__store.get();
+    return opts?.select ? opts.select(state) : state;
+  }
+}
 function Asset({ tag, attrs, children, nonce }) {
   switch (tag) {
     case "title":
@@ -1089,7 +1097,8 @@ export {
   createRootRoute as a,
   createFileRoute as b,
   createRouter as c,
-  useNavigate as d,
+  useRouterState as d,
+  useNavigate as e,
   lazyRouteComponent as l,
   renderRouterToStream as r,
   useRouter as u

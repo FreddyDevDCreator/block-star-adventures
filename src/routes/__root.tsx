@@ -1,4 +1,15 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import {
+  Outlet,
+  Link,
+  createRootRoute,
+  HeadContent,
+  Scripts,
+  useRouterState,
+} from "@tanstack/react-router";
+import { useEffect } from "react";
+import { consumeQueuedNarration } from "@/services/narrationQueue";
+import { narrate } from "@/services/audio";
+import { useSettingsStore } from "@/store/useSettingsStore";
 
 import appCss from "../styles.css?url";
 
@@ -69,5 +80,15 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const locationKey = useRouterState({ select: (s) => s.location.key });
+  const soundOn = useSettingsStore((s) => s.soundOn);
+
+  useEffect(() => {
+    if (!soundOn) return;
+    const queued = consumeQueuedNarration();
+    if (!queued) return;
+    void narrate(queued);
+  }, [locationKey, soundOn]);
+
   return <Outlet />;
 }

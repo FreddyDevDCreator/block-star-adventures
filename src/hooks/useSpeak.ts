@@ -3,7 +3,7 @@
 // Usage: useSpeak(text)  — speaks whenever `text` changes.
 //        useSpeak(text, false)  — opt-out (e.g. during animation).
 import { useEffect } from "react";
-import { speak, stopSpeaking } from "@/services/audio";
+import { narrate, stopNarration } from "@/services/audio";
 import { useSettingsStore } from "@/store/useSettingsStore";
 
 export function useSpeak(text: string, enabled = true): void {
@@ -11,9 +11,9 @@ export function useSpeak(text: string, enabled = true): void {
 
   useEffect(() => {
     if (!enabled || !soundOn || !text.trim()) return;
-    speak(text);
+    void narrate(text);
     return () => {
-      stopSpeaking();
+      void stopNarration();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, enabled, soundOn]);
