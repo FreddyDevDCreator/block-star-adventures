@@ -64,6 +64,29 @@ export interface SpeakOptions {
   rate?: number;  // default 0.88  — measured African English cadence
 }
 
+// Many browsers block audio until a user gesture happens. We "unlock" audio
+// using a near-silent WebAudio tick during a tap/click, then narration can play.
+let audioUnlocked = false;
+export async function unlockAudio(): Promise<void> {
+  if (audioUnlocked) return;
+  const c = getCtx();
+  if (!c) return;
+  try {
+    if (c.state !== "running") await c.resume();
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    gain.gain.value = 0.00001;
+    osc.frequency.value = 220;
+    osc.connect(gain);
+    gain.connect(c.destination);
+    osc.start();
+    osc.stop(c.currentTime + 0.01);
+    audioUnlocked = true;
+  } catch {
+    // ignore
+  }
+}
+
 export function speak(text: string, opts: SpeakOptions = {}): void {
   if (typeof speechSynthesis === "undefined") return;
   speechSynthesis.cancel();

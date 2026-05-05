@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { fetchLessons, getNextLevel } from "@/services/lessons";
 import { queueNarration } from "@/services/narrationQueue";
+import { SwapCupsExplainer } from "@/components/cq/SwapCupsExplainer";
 
 // Blockly is heavy — lazy load so it stays out of the main bundle.
 const BlocklyWorkspace = lazy(() => import("@/features/blockly/BlocklyWorkspace"));
@@ -33,7 +34,7 @@ const BlocklyWorkspace = lazy(() => import("@/features/blockly/BlocklyWorkspace"
 export const Route = createFileRoute("/play/$id")({
   head: () => ({
     meta: [
-      { title: "Coding Challenge — CodeQuest" },
+      { title: "Coding Challenge — Block Star Adventures" },
       { name: "description", content: "Drag blocks to solve the challenge." },
     ],
   }),
@@ -357,7 +358,10 @@ function PlayPage() {
           <SyncStatus />
           {showHint && (
             <SpeechBubble arrow="none" className="text-sm">
-              💡 {challenge.hint ?? challenge.hints?.[0] ?? "Try again — you can do it!"}
+              <div>💡 {challenge.hint ?? challenge.hints?.[0] ?? "Try again — you can do it!"}</div>
+              {/\bswap\b/i.test(challenge.title ?? "") || /\bswap\b/i.test(challenge.prompt ?? "") ? (
+                <SwapCupsExplainer />
+              ) : null}
             </SpeechBubble>
           )}
           <div className="flex items-center gap-2">

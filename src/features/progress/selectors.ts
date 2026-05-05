@@ -16,24 +16,23 @@ export function getSuccessRate(attempts: Attempt[], challengeId: string): number
 }
 
 export function getAverageTime(attempts: Attempt[], challengeId: string): number {
-  const successAttempts = getAttemptsForChallenge(attempts, challengeId).filter(
-    (a) => a.success,
-  );
+  const list = getAttemptsForChallenge(attempts, challengeId);
 
-  if (successAttempts.length === 0) return 0;
+  if (list.length === 0) return 0;
 
-  const total = successAttempts.reduce((sum, a) => sum + a.timeTaken, 0);
-  return total / successAttempts.length;
+  // Average over recent attempts so kids see progress even before first success.
+  const recent = list.slice(-5);
+  const total = recent.reduce((sum, a) => sum + a.timeTaken, 0);
+  return total / recent.length;
 }
 
 export function getEfficiency(attempts: Attempt[], challengeId: string): number {
-  const successAttempts = getAttemptsForChallenge(attempts, challengeId).filter(
-    (a) => a.success,
-  );
+  const list = getAttemptsForChallenge(attempts, challengeId);
 
-  if (successAttempts.length === 0) return 0;
+  if (list.length === 0) return 0;
 
-  const totalMoves = successAttempts.reduce((sum, a) => sum + a.movesUsed, 0);
-  return totalMoves / successAttempts.length;
+  const recent = list.slice(-5);
+  const totalMoves = recent.reduce((sum, a) => sum + a.movesUsed, 0);
+  return totalMoves / recent.length;
 }
 

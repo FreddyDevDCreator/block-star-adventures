@@ -7,6 +7,7 @@ import { SoundToggle } from "@/components/cq/SoundToggle";
 import { StatsCard } from "@/components/cq/StatsCard";
 import { SyncStatus } from "@/components/cq/SyncStatus";
 import { PageShell } from "@/components/cq/PageShell";
+import { UserAvatar } from "@/components/cq/UserAvatar";
 import { useProgressStore, xpForNextLevel, xpProgress } from "@/store/useProgressStore";
 import { useUserStore } from "@/store/useUserStore";
 import { fetchLessons, getPrimaryChallenge, type Lesson } from "@/services/lessons";
@@ -23,7 +24,7 @@ import { queueNarration } from "@/services/narrationQueue";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — CodeQuest" },
+      { title: "Dashboard — Block Star Adventures" },
       { name: "description", content: "Your coding adventure dashboard." },
     ],
   }),
@@ -39,6 +40,8 @@ function Dashboard() {
   const { coins, xp, level, badges, completedScenes } = useProgressStore();
   const attempts = useProgressStore((s) => s.attempts);
   const name = useUserStore((s) => s.name);
+  const avatar = useUserStore((s) => s.avatar);
+  const safeName = (name?.trim() && name.trim() !== "Explorer") ? name.trim() : "Explorer";
   const lessons = Route.useLoaderData() as Lesson[];
   const fallbackLesson = lessons[0];
   const progress = xpProgress(xp);
@@ -73,11 +76,11 @@ function Dashboard() {
         <header className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground font-semibold">Welcome back!</p>
-            <h1 className="text-2xl font-extrabold">Hey, {name} 👋</h1>
+            <h1 className="text-2xl font-extrabold">Hey, {safeName} 👋</h1>
           </div>
           <div className="flex items-center gap-2">
             <SoundToggle />
-            <Mascot size="md" />
+            <UserAvatar avatarId={avatar} />
           </div>
         </header>
 
@@ -100,6 +103,19 @@ function Dashboard() {
           <StatChip icon={<Sparkles className="w-5 h-5 text-primary" />} label="XP" value={xp} />
           <StatChip icon={<Trophy className="w-5 h-5 text-success" />} label="Badges" value={badges.length} />
         </div>
+
+        <section className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Link to="/journey" className="block">
+            <BigButton className="w-full" icon={<Map className="w-5 h-5" />}>
+              Journey Map
+            </BigButton>
+          </Link>
+          <Link to="/rewards" className="block">
+            <BigButton variant="accent" className="w-full" icon={<Award className="w-5 h-5" />}>
+              My Badges
+            </BigButton>
+          </Link>
+        </section>
 
         <section className="rounded-3xl bg-card border-2 border-border p-5 shadow-[var(--shadow-soft)]">
           <div className="flex items-center justify-between mb-3">
@@ -151,7 +167,7 @@ function Dashboard() {
         </section>
 
         <section>
-          <h2 className="font-extrabold mb-2">All Lessons</h2>
+          <h2 className="font-extrabold mb-2">Explore Lessons</h2>
           <ul className="flex flex-col gap-2">
             {lessons.map((l) => (
               <li key={l.id}>
@@ -172,19 +188,6 @@ function Dashboard() {
               </li>
             ))}
           </ul>
-        </section>
-
-        <section className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Link to="/journey" className="block">
-            <BigButton className="w-full" icon={<Map className="w-5 h-5" />}>
-              Journey Map
-            </BigButton>
-          </Link>
-          <Link to="/rewards" className="block">
-            <BigButton variant="accent" className="w-full" icon={<Award className="w-5 h-5" />}>
-              My Badges
-            </BigButton>
-          </Link>
         </section>
 
         <SyncStatus />

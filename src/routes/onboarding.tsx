@@ -10,6 +10,7 @@ import { createUser } from "@/services/users";
 import { ChevronRight, SkipForward } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { PageShell } from "@/components/cq/PageShell";
+import { playSfx, unlockAudio } from "@/services/audio";
 
 const AVATARS: Array<{ id: string; label: string; emoji: string }> = [
   { id: "rocket", label: "Rocket", emoji: "🚀" },
@@ -23,7 +24,7 @@ const AVATARS: Array<{ id: string; label: string; emoji: string }> = [
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
     meta: [
-      { title: "Welcome — CodeQuest" },
+      { title: "Welcome — Block Star Adventures" },
       { name: "description", content: "Meet Bolt and start your coding adventure." },
     ],
   }),
@@ -53,6 +54,10 @@ function OnboardingPage() {
   }, []);
 
   const finish = async () => {
+    finishOnboarding();
+    navigate({ to: "/dashboard" });
+
+    // Create backend user in background (never block navigation/UX).
     if (!userId) {
       try {
         const res = await createUser({ name, avatar, ageGroup });
@@ -61,8 +66,6 @@ function OnboardingPage() {
         // Offline / backend not running yet — keep local profile; sync will wait until userId exists.
       }
     }
-    finishOnboarding();
-    navigate({ to: "/dashboard" });
   };
 
   const next = () => {
@@ -86,8 +89,8 @@ function OnboardingPage() {
       </div>
 
       <div className="flex-1 w-full flex flex-col items-center justify-center">
-        <div className="w-full max-w-md flex flex-col items-center gap-6 text-center">
-          <Mascot size="xl" />
+      <div className="w-full max-w-md flex flex-col items-center gap-6 text-center">
+        <Mascot size="xl" />
           {isNameStep ? (
             <SpeechBubble arrow="bottom" className="w-full">
               <div className="text-3xl mb-1">👋</div>
@@ -165,39 +168,53 @@ function OnboardingPage() {
             <SpeechBubble arrow="bottom" className="w-full">
               <div className="text-3xl mb-1">{current?.emoji}</div>
               <h1 className="text-2xl font-extrabold">{current?.title}</h1>
-              <p className="text-muted-foreground mt-1">{current?.message}</p>
-            </SpeechBubble>
+              <p className="text-muted-foreground mt-1">
+                {(current?.message ?? "")
+                  .replaceAll("{name}", nameTrimmed || "Explorer")
+                  .replaceAll("{hero}", nameTrimmed || "Explorer")}
+              </p>
+        </SpeechBubble>
           )}
 
-          <div className="flex gap-2">
+        <div className="flex gap-2">
             {Array.from({ length: totalSteps }).map((_, idx) => (
-              <span
+            <span
                 key={idx}
-                className={`h-2 rounded-full transition-all ${
+              className={`h-2 rounded-full transition-all ${
                   idx === step ? "w-8 bg-primary" : "w-2 bg-border"
-                }`}
-              />
-            ))}
-          </div>
+              }`}
+            />
+          ))}
+        </div>
 
-          <div className="flex gap-3 w-full">
+        <div className="flex gap-3 w-full">
             <BigButton
               variant="ghost"
               className="flex-1"
-              onClick={finish}
+              onClick={() => {
+                void unlockAudio();
+                playSfx("click");
+                void finish();
+              }}
               icon={<SkipForward className="w-5 h-5" />}
             >
-              Skip
-            </BigButton>
+            Skip
+          </BigButton>
             <BigButton
               className="flex-[2]"
               onClick={
                 isNameStep
                   ? () => {
+                      void unlockAudio();
+                      playSfx("click");
                       setName(nameTrimmed || "Explorer");
                       next();
                     }
-                  : next
+                  : () => {
+                      void unlockAudio();
+                      playSfx("click");
+                      next();
+                    }
               }
               icon={<ChevronRight className="w-5 h-5" />}
               disabled={
@@ -211,10 +228,10 @@ function OnboardingPage() {
                 : step === totalSteps - 1
                   ? "Let's go!"
                   : "Next"}
-            </BigButton>
-          </div>
+          </BigButton>
         </div>
       </div>
+    </div>
     </PageShell>
   );
 }

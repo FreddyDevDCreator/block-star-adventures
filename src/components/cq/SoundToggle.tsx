@@ -3,7 +3,7 @@
 // (Step 2 of architecture refactor — decoupled from game/progress state).
 import { Volume2, VolumeX } from "lucide-react";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { stopNarration } from "@/services/audio";
+import { stopNarration, unlockAudio } from "@/services/audio";
 import { cn } from "@/lib/utils";
 
 interface SoundToggleProps {
@@ -16,6 +16,7 @@ export function SoundToggle({ className }: SoundToggleProps) {
 
   const handleClick = () => {
     if (soundOn) void stopNarration();
+    if (!soundOn) void unlockAudio();
     toggleSound();
   };
 

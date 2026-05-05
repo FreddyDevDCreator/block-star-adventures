@@ -4,7 +4,7 @@ import { useAppHydration } from "@/hooks/useAppHydration";
 import { Mascot } from "@/components/cq/Mascot";
 import { BigButton } from "@/components/cq/BigButton";
 import { SoundToggle } from "@/components/cq/SoundToggle";
-import { playSfx } from "@/services/audio";
+import { playSfx, unlockAudio } from "@/services/audio";
 import { queueNarration } from "@/services/narrationQueue";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useUserStore } from "@/store/useUserStore";
@@ -69,6 +69,7 @@ function Index() {
             <BigButton
               className="w-full"
               onClick={() => {
+                void unlockAudio();
                 playSfx("click");
                 if (soundOn) queueNarration("Eiii! Welcome! I’m Bolt. Tap next and follow me!");
                 navigate({ to: onboarded ? "/dashboard" : "/onboarding" });

@@ -5,13 +5,15 @@ import { nitro } from "nitro/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 
-// Vercel deployment uses Nitro adapter output (.output)
-export default defineConfig({
+// Nitro is only needed for production builds (Vercel output).
+// In dev, enabling Nitro can break the Vite environment runner with:
+// "Vite environment \"nitro\" is unavailable".
+export default defineConfig(({ command }) => ({
   plugins: [
     tsconfigPaths(),
     tailwindcss(),
     tanstackStart(),
-    nitro({ preset: "vercel" }),
+    ...(command === "build" ? [nitro({ preset: "vercel" })] : []),
     react(),
   ],
-});
+}));

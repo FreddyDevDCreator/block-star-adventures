@@ -24,6 +24,7 @@ export const BigButton = forwardRef<HTMLButtonElement, BigButtonProps>(
     <button
       ref={ref}
       {...props}
+      type={props.type ?? "button"}
       className={cn(
         "inline-flex items-center justify-center gap-2 min-h-16 px-6 py-4 rounded-2xl font-bold text-lg sm:text-xl transition-all duration-150 select-none disabled:opacity-50 disabled:pointer-events-none",
         variants[variant],

@@ -14,7 +14,7 @@ import { queueNarration } from "@/services/narrationQueue";
 export const Route = createFileRoute("/lesson/$id")({
   head: ({ params }) => ({
     meta: [
-      { title: `Lesson — CodeQuest` },
+      { title: `Lesson — Block Star Adventures` },
       { name: "description", content: `Read the ${params.id} comic.` },
     ],
   }),
