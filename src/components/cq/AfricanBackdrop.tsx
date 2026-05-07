@@ -4,10 +4,7 @@ export function AfricanBackdrop({ className }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={cn(
-        "pointer-events-none absolute inset-0 opacity-25",
-        className,
-      )}
+      className={cn("pointer-events-none absolute inset-0 opacity-25", className)}
     >
       {/* Kente-inspired stripes + subtle geometric dots.
           Pure CSS/SVG so it works everywhere without extra assets. */}
@@ -22,8 +19,7 @@ export function AfricanBackdrop({ className }: { className?: string }) {
         {/* Triangle motifs */}
         {Array.from({ length: 18 }).map((_, i) => (
           <polygon
-            // eslint-disable-next-line react/no-array-index-key
-            key={i}
+            key={`triangle-${i}`}
             points={`${(i % 6) * 70 + 10},${i * 45 - 20} ${(i % 6) * 70 + 40},${i * 45 - 40} ${(i % 6) * 70 + 70},${
               i * 45 - 20
             }`}
@@ -34,4 +30,3 @@ export function AfricanBackdrop({ className }: { className?: string }) {
     </div>
   );
 }
-

@@ -46,7 +46,6 @@ export function simulate(code: string, start: Step): SimResult {
   };
 
   try {
-    // eslint-disable-next-line no-new-func
     const fn = new Function("api", `with(api){\n${code}\n}`);
     fn(api);
   } catch (err) {

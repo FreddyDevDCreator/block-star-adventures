@@ -19,4 +19,3 @@ export function consumeQueuedNarration(): string | null {
     return null;
   }
 }
-

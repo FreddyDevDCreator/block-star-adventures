@@ -12,4 +12,3 @@ export async function createUser(payload: CreateUserPayload): Promise<{ userId: 
     body: JSON.stringify(payload),
   });
 }
-

@@ -35,9 +35,9 @@ function registerBlocks() {
   // ── 4 movement blocks ────────────────────────────────────────────────────
   const moves: Array<[string, string, string, () => string]> = [
     ["move_right", "Move ▶", "#3b82f6", () => "moveRight();\n"],
-    ["move_up",    "Move ▲", "#10b981", () => "moveUp();\n"],
-    ["move_left",  "Move ◀", "#6366f1", () => "moveLeft();\n"],
-    ["move_down",  "Move ▼", "#f59e0b", () => "moveDown();\n"],
+    ["move_up", "Move ▲", "#10b981", () => "moveUp();\n"],
+    ["move_left", "Move ◀", "#6366f1", () => "moveLeft();\n"],
+    ["move_down", "Move ▼", "#f59e0b", () => "moveDown();\n"],
   ];
 
   for (const [name, label, color, gen] of moves) {
@@ -103,5 +103,10 @@ export default function BlocklyWorkspace({ onCodeChange, initialXml }: BlocklyWo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div ref={containerRef} className="w-full h-full min-h-[360px] rounded-2xl overflow-hidden border-2 border-border bg-card" />;
+  return (
+    <div
+      ref={containerRef}
+      className="w-full h-full min-h-[360px] rounded-2xl overflow-hidden border-2 border-border bg-card"
+    />
+  );
 }

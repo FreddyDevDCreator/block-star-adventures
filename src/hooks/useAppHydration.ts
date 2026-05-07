@@ -29,4 +29,3 @@ export function useAppHydration(): boolean {
 
   return isHydrated;
 }
-

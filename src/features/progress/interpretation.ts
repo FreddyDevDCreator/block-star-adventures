@@ -7,10 +7,7 @@ export function getLearningStatus(successRate: number): string {
   return "Needs Help 🧠";
 }
 
-export function getImprovementHint(
-  attempts: Attempt[],
-  challengeId: string,
-): string {
+export function getImprovementHint(attempts: Attempt[], challengeId: string): string {
   const list = attempts.filter((a) => a.challengeId === challengeId);
   const last3 = list.slice(-3);
 
@@ -29,4 +26,3 @@ export function getImprovementHint(
 
   return "Try again, you can do better 💪";
 }
-

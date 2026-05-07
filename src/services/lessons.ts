@@ -77,8 +77,8 @@ export function getNextLevel(
 
   const nextLesson = lessons[li + 1];
   const nextChallenge = nextLesson?.challenges?.[0];
-  if (nextLesson && nextChallenge) return { lessonId: nextLesson.id, challengeId: nextChallenge.id };
+  if (nextLesson && nextChallenge)
+    return { lessonId: nextLesson.id, challengeId: nextChallenge.id };
 
   return null;
 }
-

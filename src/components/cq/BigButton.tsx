@@ -15,8 +15,7 @@ const variants: Record<Variant, string> = {
     "bg-[image:var(--gradient-sunshine)] text-accent-foreground shadow-[var(--shadow-pop)] hover:brightness-110 active:scale-[0.97]",
   success:
     "bg-success text-success-foreground shadow-[var(--shadow-pop)] hover:brightness-110 active:scale-[0.97]",
-  ghost:
-    "bg-card text-foreground border-2 border-border hover:bg-secondary active:scale-[0.97]",
+  ghost: "bg-card text-foreground border-2 border-border hover:bg-secondary active:scale-[0.97]",
 };
 
 export const BigButton = forwardRef<HTMLButtonElement, BigButtonProps>(

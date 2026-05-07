@@ -28,9 +28,11 @@ export function Mascot({ size = "md", className, bob = true }: MascotProps) {
         bob && "animate-[bob_3s_ease-in-out_infinite]",
         className,
       )}
-      style={{
-        // inline keyframes via tw-animate-css fallback
-      }}
+      style={
+        {
+          // inline keyframes via tw-animate-css fallback
+        }
+      }
     />
   );
 }

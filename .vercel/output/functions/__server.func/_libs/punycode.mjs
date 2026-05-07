@@ -1,4 +1,4 @@
-import { b as getAugmentedNamespace } from "./react.mjs";
+import { d as getAugmentedNamespace } from "./react.mjs";
 const maxInt = 2147483647;
 const base = 36;
 const tMin = 1;

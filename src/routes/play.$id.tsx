@@ -21,7 +21,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { SyncStatus } from "@/components/cq/SyncStatus";
 import { PageShell } from "@/components/cq/PageShell";
 import { Home, Lightbulb, Play, RotateCcw } from "lucide-react";
-import { narrate, playSfx } from "@/services/audio";
+import { narrate, playSfx, unlockAudio } from "@/services/audio";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { fetchLessons, getNextLevel } from "@/services/lessons";
@@ -60,11 +60,23 @@ function directionalFeedback(finalPos: Step, goalPos: Step): string {
   const dy = finalPos.y - goalPos.y;
   const lines: string[] = [];
 
-  if (dx > 0) lines.push(`Chai! You went ${dx} step${dx > 1 ? "s" : ""} too far to the right. Remove ${dx} Move Right block${dx > 1 ? "s" : ""} and try again!`);
-  else if (dx < 0) lines.push(`Eii! You need ${-dx} more step${-dx > 1 ? "s" : ""} to the right. Add ${-dx} Move Right block${-dx > 1 ? "s" : ""} and run again!`);
+  if (dx > 0)
+    lines.push(
+      `Chai! You went ${dx} step${dx > 1 ? "s" : ""} too far to the right. Remove ${dx} Move Right block${dx > 1 ? "s" : ""} and try again!`,
+    );
+  else if (dx < 0)
+    lines.push(
+      `Eii! You need ${-dx} more step${-dx > 1 ? "s" : ""} to the right. Add ${-dx} Move Right block${-dx > 1 ? "s" : ""} and run again!`,
+    );
 
-  if (dy > 0) lines.push(`You went ${dy} step${dy > 1 ? "s" : ""} too high. Remove ${dy} Move Up block${dy > 1 ? "s" : ""}, my friend!`);
-  else if (dy < 0) lines.push(`You need ${-dy} more step${-dy > 1 ? "s" : ""} going up. Add ${-dy} Move Up block${-dy > 1 ? "s" : ""} — you are almost there!`);
+  if (dy > 0)
+    lines.push(
+      `You went ${dy} step${dy > 1 ? "s" : ""} too high. Remove ${dy} Move Up block${dy > 1 ? "s" : ""}, my friend!`,
+    );
+  else if (dy < 0)
+    lines.push(
+      `You need ${-dy} more step${-dy > 1 ? "s" : ""} going up. Add ${-dy} Move Up block${-dy > 1 ? "s" : ""} — you are almost there!`,
+    );
 
   return lines.length
     ? lines.join(" ")
@@ -75,15 +87,15 @@ function PlayPage() {
   const lesson = Route.useLoaderData() as Lesson;
   const { c } = Route.useSearch() as { c?: string };
   const challenge =
-    (c ? lesson.challenges.find((ch) => ch.id === c) : null) ??
-    getPrimaryChallenge(lesson);
+    (c ? lesson.challenges.find((ch) => ch.id === c) : null) ?? getPrimaryChallenge(lesson);
   if (!challenge) {
     throw new Error(`Invalid lesson payload: no challenges. lessonId=${lesson.id}`);
   }
   const isGrid = isGridChallenge(challenge);
   const isQuiz = isQuizChallenge(challenge);
 
-  const startStep: Step = isGrid && challenge.start ? { x: challenge.start.x, y: challenge.start.y } : { x: 0, y: 0 };
+  const startStep: Step =
+    isGrid && challenge.start ? { x: challenge.start.x, y: challenge.start.y } : { x: 0, y: 0 };
   const gridSize = isGrid
     ? Math.max(
         4,
@@ -97,19 +109,33 @@ function PlayPage() {
     : 4;
   const [code, setCode] = useState("");
   const [trail, setTrail] = useState<Step[]>([startStep]);
-  const [feedback, setFeedback] = useState<{ kind: "ok" | "err" | "idle"; msg?: string }>({ kind: "idle" });
+  const [feedback, setFeedback] = useState<{ kind: "ok" | "err" | "idle"; msg?: string }>({
+    kind: "idle",
+  });
   const [showHint, setShowHint] = useState(false);
   const [reward, setReward] = useState(false);
-  const [rewardData, setRewardData] = useState<{ coins: number; xp: number; badge?: string }>({ coins: 0, xp: 0 });
+  const [rewardData, setRewardData] = useState<{ coins: number; xp: number; badge?: string }>({
+    coins: 0,
+    xp: 0,
+  });
   const [animating, setAnimating] = useState(false);
   const [runStartedAt, setRunStartedAt] = useState<number | null>(null);
   const [quizAnswer, setQuizAnswer] = useState("");
   const [quizStartedAt, setQuizStartedAt] = useState<number | null>(null);
   const navigate = useNavigate();
 
-  const { awardCoins, addXp, unlockBadge, completeChallenge, recordAttempt } = useProgressStore();
+  const awardCoins = useProgressStore((s) => s.awardCoins);
+  const addXp = useProgressStore((s) => s.addXp);
+  const unlockBadge = useProgressStore((s) => s.unlockBadge);
+  const completeChallenge = useProgressStore((s) => s.completeChallenge);
+  const recordAttempt = useProgressStore((s) => s.recordAttempt);
   const attempts = useProgressStore((s) => s.attempts);
   const userId = useUserStore((s) => s.userId);
+
+  const playClick = useCallback(() => {
+    void unlockAudio();
+    playSfx("click");
+  }, []);
 
   const makeAttemptId = () =>
     globalThis.crypto?.randomUUID?.() ?? `att_${Date.now()}_${Math.random().toString(16).slice(2)}`;
@@ -166,12 +192,13 @@ function PlayPage() {
       });
       void narrate(msg);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attempts, code, challenge, isGrid, recordAttempt, runStartedAt, startStep, userId]);
 
   const onRun = () => {
     if (!isGrid) return;
     if (!challenge.start) throw new Error("Invalid grid challenge: missing start");
+    void unlockAudio();
     // Guard: empty code → no blocks connected under the hat
     if (!code.trim()) {
       playSfx("error");
@@ -216,6 +243,7 @@ function PlayPage() {
   };
 
   const onReset = () => {
+    playClick();
     setTrail([startStep]);
     setFeedback({ kind: "idle" });
     setAnimating(false);
@@ -223,6 +251,7 @@ function PlayPage() {
 
   const onSubmitQuiz = () => {
     if (!isQuiz) return;
+    void unlockAudio();
     const createdAt = Date.now();
     const startedAt = quizStartedAt ?? createdAt;
     const timeTaken = Math.max(0, createdAt - startedAt);
@@ -234,12 +263,19 @@ function PlayPage() {
     if (kind === "number") {
       const n = Number(quizAnswer);
       normalizedAnswer = n;
-      success = Number.isFinite(n) && typeof challenge.quiz?.answer === "number" && n === challenge.quiz.answer;
+      success =
+        Number.isFinite(n) &&
+        typeof challenge.quiz?.answer === "number" &&
+        n === challenge.quiz.answer;
     } else if (kind === "multipleChoice") {
       normalizedAnswer = quizAnswer;
-      success = Boolean(challenge.quiz?.correctChoiceId) && quizAnswer === challenge.quiz.correctChoiceId;
+      success =
+        Boolean(challenge.quiz?.correctChoiceId) &&
+        quizAnswer === (challenge.quiz?.correctChoiceId ?? "");
     } else {
-      const acceptable = (challenge.quiz?.acceptableAnswers ?? []).map((s) => s.trim().toLowerCase());
+      const acceptable = (challenge.quiz?.acceptableAnswers ?? []).map((s) =>
+        s.trim().toLowerCase(),
+      );
       success = acceptable.length
         ? acceptable.includes(quizAnswer.trim().toLowerCase())
         : quizAnswer.trim().length > 0;
@@ -258,6 +294,7 @@ function PlayPage() {
     recordAttempt(attempt);
 
     if (success) {
+      playSfx("success");
       const r = computeReward([...attempts, attempt], challenge.id);
       completeChallenge(challenge.id);
       awardCoins(r.coins);
@@ -270,6 +307,7 @@ function PlayPage() {
       void narrate(msg);
       setReward(true);
     } else {
+      playSfx("error");
       const msg = "Not yet — try again, you can do it!";
       setFeedback({ kind: "err", msg });
       void narrate(msg);
@@ -283,30 +321,58 @@ function PlayPage() {
         ? "Snap some blocks under 'When Run is pressed', then hit Run — let us fly!"
         : "Read the question and answer it — you can do it!"
       : feedback.kind === "ok"
-      ? "🎉 " + feedback.msg
-      : "🤔 " + feedback.msg;
+        ? "🎉 " + feedback.msg
+        : "🤔 " + feedback.msg;
 
   return (
     <PageShell>
-      <header className="flex items-center justify-between p-4">
-        <Link to="/lesson/$id" params={{ id: lesson.id }} className="inline-flex items-center gap-1 font-bold">
+      <header className="flex items-center justify-between gap-2 p-4 min-w-0">
+        <Link
+          to="/lesson/$id"
+          params={{ id: lesson.id }}
+          search={{ c: challenge.id }}
+          className={cn(
+            "inline-flex items-center gap-2 font-extrabold",
+            "h-11 px-3 rounded-xl border-2 border-border bg-card shadow-[var(--shadow-soft)]",
+            "hover:border-primary/60 transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          )}
+        >
           <Home className="w-5 h-5" /> Lesson
         </Link>
-        <h1 className="font-extrabold text-lg truncate">{challenge.title}</h1>
-        <div className="flex items-center gap-2">
+        <h1 className="font-extrabold text-lg truncate min-w-0 flex-1 text-center">
+          {challenge.title}
+        </h1>
+        <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={() => setShowHint((s) => !s)}
-            className="inline-flex items-center gap-1 text-sm font-bold text-primary"
+            type="button"
+            onClick={() => {
+              playClick();
+              const next = !showHint;
+              setShowHint(next);
+              if (next) {
+                const hint = challenge.hint ?? challenge.hints?.[0] ?? "Try again — you can do it!";
+                void narrate(hint);
+              }
+            }}
+            aria-controls="hint-panel"
+            aria-expanded={showHint}
+            className={cn(
+              "inline-flex items-center gap-2 text-sm font-extrabold",
+              "h-11 px-3 rounded-xl border-2 border-border bg-card shadow-[var(--shadow-soft)]",
+              "hover:border-primary/60 transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            )}
             id="hint-toggle"
           >
-            <Lightbulb className="w-4 h-4" /> Hint
+            <Lightbulb className="w-5 h-5" /> Hint
           </button>
-          <SoundToggle />
+          <SoundToggle className="w-11 h-11" />
         </div>
       </header>
 
-      <main className="flex-1 grid lg:grid-cols-2 gap-4 px-4 pb-4 max-w-5xl w-full mx-auto">
-        <section className="flex flex-col gap-3">
+      <main className="flex-1 grid lg:grid-cols-2 gap-4 px-4 pb-4 max-w-5xl w-full mx-auto min-w-0">
+        <section className="flex flex-col gap-3 min-w-0">
           {isGrid && challenge.goalPos ? (
             <GridSim
               size={gridSize}
@@ -318,21 +384,31 @@ function PlayPage() {
           ) : (
             <div className="rounded-2xl bg-card border-2 border-border p-5 shadow-[var(--shadow-soft)]">
               <div className="text-xs text-muted-foreground font-semibold">QUESTION</div>
-              <div className="mt-2 text-lg font-extrabold">{challenge.quiz?.question ?? challenge.prompt}</div>
-              <div className="mt-2 text-sm text-muted-foreground font-semibold">{challenge.goal}</div>
+              <div className="mt-2 text-lg font-extrabold">
+                {challenge.quiz?.question ?? challenge.prompt}
+              </div>
+              <div className="mt-2 text-sm text-muted-foreground font-semibold">
+                {challenge.goal}
+              </div>
 
               {challenge.quiz?.kind === "multipleChoice" ? (
                 <div className="mt-4 grid gap-2">
                   {(challenge.quiz?.choices ?? []).map((c) => (
                     <button
                       key={c.id}
+                      type="button"
                       onClick={() => {
+                        playClick();
                         if (!quizStartedAt) setQuizStartedAt(Date.now());
                         setQuizAnswer(c.id);
                       }}
+                      aria-pressed={quizAnswer === c.id}
                       className={[
                         "text-left rounded-2xl border-2 px-5 py-4 min-h-14 font-bold text-base sm:text-lg transition-colors flex items-center",
-                        quizAnswer === c.id ? "border-primary bg-primary/10" : "border-border bg-card",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                        quizAnswer === c.id
+                          ? "border-primary bg-primary/10"
+                          : "border-border bg-card",
                       ].join(" ")}
                     >
                       {c.label}
@@ -347,9 +423,18 @@ function PlayPage() {
                       if (!quizStartedAt) setQuizStartedAt(Date.now());
                       setQuizAnswer(e.target.value);
                     }}
-                    placeholder={challenge.quiz?.kind === "number" ? "Type a number…" : "Type your answer…"}
-                    className="font-bold"
+                    placeholder={
+                      challenge.quiz?.kind === "number" ? "Type a number…" : "Type your answer…"
+                    }
+                    className="h-12 font-extrabold text-lg"
                     inputMode={challenge.quiz?.kind === "number" ? "numeric" : undefined}
+                    enterKeyHint="done"
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+                      if (!quizAnswer.trim()) return;
+                      playClick();
+                      onSubmitQuiz();
+                    }}
                   />
                 </div>
               )}
@@ -357,27 +442,29 @@ function PlayPage() {
           )}
           <SyncStatus />
           {showHint && (
-            <SpeechBubble arrow="none" className="text-sm">
+            <SpeechBubble id="hint-panel" arrow="none" className="text-sm" aria-live="polite">
               <div>💡 {challenge.hint ?? challenge.hints?.[0] ?? "Try again — you can do it!"}</div>
-              {/\bswap\b/i.test(challenge.title ?? "") || /\bswap\b/i.test(challenge.prompt ?? "") ? (
+              {/\bswap\b/i.test(challenge.title ?? "") ||
+              /\bswap\b/i.test(challenge.prompt ?? "") ? (
                 <SwapCupsExplainer />
               ) : null}
             </SpeechBubble>
           )}
           <div className="flex items-center gap-2">
             <Mascot size="sm" bob={animating} />
-            <SpeechBubble className="flex-1 text-sm" arrow="left">
+            <SpeechBubble className="flex-1 text-sm" arrow="left" aria-live="polite">
               {feedbackText}
             </SpeechBubble>
           </div>
         </section>
 
-        <section className="flex flex-col gap-3 min-h-[420px]">
+        <section className="flex flex-col gap-3 min-h-[420px] min-w-0">
           {isQuiz ? (
             <div className="flex gap-3">
               <BigButton
                 variant="ghost"
                 onClick={() => {
+                  playClick();
                   setQuizAnswer("");
                   setFeedback({ kind: "idle" });
                 }}
@@ -387,7 +474,10 @@ function PlayPage() {
               </BigButton>
               <BigButton
                 variant="success"
-                onClick={onSubmitQuiz}
+                onClick={() => {
+                  playClick();
+                  onSubmitQuiz();
+                }}
                 className="flex-[2]"
                 disabled={!quizAnswer.trim()}
               >
@@ -400,13 +490,15 @@ function PlayPage() {
               <div className="flex-1 grid place-items-center rounded-2xl border-2 border-dashed border-border bg-card/50">
                 <div className="text-center">
                   <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-                  <p className="mt-2 text-sm text-muted-foreground font-bold">Loading code blocks…</p>
+                  <p className="mt-2 text-sm text-muted-foreground font-bold">
+                    Loading code blocks…
+                  </p>
                 </div>
               </div>
             }
           >
             {isGrid ? (
-              <div className="flex-1 min-h-[360px]">
+              <div className="flex-1 min-h-[360px] min-w-0 overflow-hidden">
                 <BlocklyWorkspace onCodeChange={setCode} />
               </div>
             ) : (
@@ -420,29 +512,34 @@ function PlayPage() {
               </div>
             )}
           </Suspense>
-          <div className="flex gap-3">
-            <BigButton
-              variant="ghost"
-              onClick={onReset}
-              icon={<RotateCcw className="w-5 h-5" />}
-              className="flex-1"
-              disabled={animating}
-            >
-              Reset
-            </BigButton>
-            <BigButton
-              variant="success"
-              onClick={onRun}
-              icon={<Play className="w-5 h-5" />}
-              className={cn(
-                "flex-[2] transition-all",
-                codeReady && !animating && "animate-pulse shadow-[0_0_16px_oklch(0.75_0.16_155/0.5)]",
-              )}
-              disabled={!isGrid || animating}
-            >
-              {animating ? "Flying…" : "Run Code"}
-            </BigButton>
-          </div>
+          {isGrid ? (
+            <div className="flex gap-3">
+              <BigButton
+                variant="ghost"
+                onClick={onReset}
+                icon={<RotateCcw className="w-5 h-5" />}
+                className="flex-1"
+                disabled={animating}
+              >
+                Reset
+              </BigButton>
+              <BigButton
+                variant="success"
+                onClick={() => {
+                  playClick();
+                  onRun();
+                }}
+                icon={<Play className="w-5 h-5" />}
+                className={cn(
+                  "flex-[2] transition-all",
+                  codeReady && !animating && "animate-[pulse-glow_2.2s_ease-in-out_infinite]",
+                )}
+                disabled={animating}
+              >
+                {animating ? "Flying…" : "Run Code"}
+              </BigButton>
+            </div>
+          ) : null}
         </section>
       </main>
 

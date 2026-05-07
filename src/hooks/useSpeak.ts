@@ -15,6 +15,5 @@ export function useSpeak(text: string, enabled = true): void {
     return () => {
       void stopNarration();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, enabled, soundOn]);
 }

@@ -1,8 +1,6 @@
 import { API_BASE_URL } from "@/services/api";
 
-type RemoteNarrationResponse =
-  | { audioBase64: string; mime?: string }
-  | { audioUrl: string };
+type RemoteNarrationResponse = { audioBase64: string; mime?: string } | { audioUrl: string };
 
 let currentAudio: HTMLAudioElement | null = null;
 
@@ -52,16 +50,11 @@ export async function narrateRemote(text: string): Promise<void> {
   currentAudio = audio;
   audio.preload = "auto";
   audio.volume = 1;
-  try {
-    await audio.play();
-  } catch (e) {
-    // Autoplay restrictions can block audio until a user gesture.
-    // Let caller decide how to fall back (audio.ts already does).
-    throw e;
-  }
+  // Autoplay restrictions can block audio until a user gesture.
+  // Let caller decide how to fall back (audio.ts already does).
+  await audio.play();
 }
 
 export function stopRemoteNarration(): void {
   stopRemoteAudio();
 }
-

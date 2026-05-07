@@ -35,4 +35,3 @@ export async function syncAttempts(userId: string): Promise<void> {
     setSyncStatus("offline");
   }
 }
-

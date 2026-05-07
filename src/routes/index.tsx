@@ -9,6 +9,17 @@ import { queueNarration } from "@/services/narrationQueue";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useUserStore } from "@/store/useUserStore";
 import { PageShell } from "@/components/cq/PageShell";
+import { SpeechBubble } from "@/components/cq/SpeechBubble";
+import { StatChip } from "@/components/cq/StatChip";
+import { useConfetti } from "@/hooks/useConfetti";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Clock3, Rocket, Sparkles, WifiOff } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,59 +41,109 @@ function Index() {
   const soundOn = useSettingsStore((s) => s.soundOn);
   const onboarded = useUserStore((s) => s.onboarded);
   const navigate = useNavigate();
+  const confetti = useConfetti();
+  const [isStarting, setIsStarting] = useState(false);
+
+  const primaryCtaLabel = useMemo(
+    () => (onboarded ? "Continue Adventure" : "Start Learning"),
+    [onboarded],
+  );
+
+  const handleStart = useCallback(() => {
+    if (isStarting) return;
+    setIsStarting(true);
+
+    void unlockAudio();
+    playSfx("click");
+    confetti();
+
+    if (soundOn) {
+      queueNarration("Eiii! Welcome! I’m Bolt. Tap next and follow me!");
+    }
+
+    navigate({ to: onboarded ? "/dashboard" : "/onboarding" });
+  }, [confetti, isStarting, navigate, onboarded, soundOn]);
 
   if (!isHydrated) return <LoadingScreen />;
 
   return (
     <PageShell>
-      <div className="max-w-md mx-auto flex flex-col gap-6">
-        <header className="flex items-center justify-between">
-          <div className="font-extrabold text-lg">Block Star Adventures</div>
-          <SoundToggle />
+      <div className="mx-auto w-full max-w-xl flex flex-col gap-5 sm:gap-6">
+        <header className="flex items-center justify-between gap-3 min-w-0">
+          <div className="font-extrabold text-base sm:text-lg leading-tight">
+            Block Star Adventures
+          </div>
+          <SoundToggle className="w-11 h-11" />
         </header>
 
-        <section className="rounded-3xl bg-card border-2 border-border p-6 shadow-[var(--shadow-soft)] text-center">
-          <div className="flex justify-center">
-            <Mascot size="xl" />
-          </div>
-          <p className="mt-3 text-sm font-semibold">
-            “Eiii! Let’s go on an adventure!” 🚀
-          </p>
-          <h1 className="mt-6 text-3xl font-extrabold leading-tight">
-            Learn coding with Bolt — from Africa’s sky to the Moon 🚀
-          </h1>
-          <p className="mt-2 text-muted-foreground font-semibold">
-            A playful, offline-friendly coding adventure for African kids — built to grow
-            confidence, problem-solving, and creativity.
-          </p>
+        <section className="rounded-3xl bg-card border-2 border-border p-5 sm:p-6 shadow-[var(--shadow-soft)]">
+          <div className="grid gap-4">
+            <div className="grid justify-items-center">
+              <Mascot size="lg" className="sm:w-64 sm:h-64" />
+              <div className="mt-2 w-full max-w-sm">
+                <SpeechBubble arrow="bottom">
+                  <p className="text-center font-extrabold text-base sm:text-lg">
+                    Hi! I’m Bolt — tap the big button to start!
+                  </p>
+                </SpeechBubble>
+              </div>
+            </div>
 
-          <div className="mt-4 text-left rounded-2xl bg-card/50 border border-border p-4">
-            <div className="font-extrabold">For parents</div>
-            <ul className="mt-2 text-sm text-muted-foreground font-semibold space-y-1">
-              <li>• Bite-sized missions with instant feedback (like a story game)</li>
-              <li>• Progress saved automatically (works without internet)</li>
-              <li>• Attempts + learning insights that show improvement over time</li>
-            </ul>
-          </div>
+            <div className="text-center">
+              <h1 className="text-2xl sm:text-3xl font-extrabold leading-tight">
+                Learn coding with Bolt <span aria-hidden="true">🚀</span>
+              </h1>
+              <p className="mt-2 text-sm sm:text-base text-muted-foreground font-semibold">
+                Short missions • Instant feedback • Big rewards
+              </p>
+            </div>
 
-          <div className="block mt-6">
-            <BigButton
-              className="w-full"
-              onClick={() => {
-                void unlockAudio();
-                playSfx("click");
-                if (soundOn) queueNarration("Eiii! Welcome! I’m Bolt. Tap next and follow me!");
-                navigate({ to: onboarded ? "/dashboard" : "/onboarding" });
-              }}
-            >
-              Start Learning
-            </BigButton>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <StatChip icon={<Clock3 className="w-5 h-5" />} label="Missions" value="3–5 min" />
+              <StatChip
+                icon={<WifiOff className="w-5 h-5" />}
+                label="Offline"
+                value="Works without internet"
+              />
+              <StatChip
+                icon={<Sparkles className="w-5 h-5" />}
+                label="Rewards"
+                value="Stars + confetti"
+              />
+            </div>
+
+            <div className="grid gap-3">
+              <BigButton
+                className="w-full"
+                icon={<Rocket className="w-5 h-5" aria-hidden="true" />}
+                disabled={isStarting}
+                aria-busy={isStarting}
+                onClick={handleStart}
+              >
+                {isStarting ? "Starting…" : primaryCtaLabel}
+              </BigButton>
+
+              <p className="text-center text-xs sm:text-sm text-muted-foreground font-semibold">
+                Offline-first • Saves automatically • Kid-friendly design
+              </p>
+            </div>
+
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="grownups" className="border-0">
+                <AccordionTrigger className="rounded-2xl bg-card border-2 border-border px-4 hover:no-underline">
+                  Grown-ups: what this teaches
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pt-3">
+                  <ul className="text-sm sm:text-base text-muted-foreground font-semibold space-y-2 list-disc pl-5">
+                    <li>Bite-sized missions with instant feedback (like a story game)</li>
+                    <li>Progress saves automatically (even without internet)</li>
+                    <li>Attempts + learning insights that show improvement over time</li>
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </section>
-
-        <p className="text-center text-xs text-muted-foreground font-semibold">
-          Offline-first • Works without internet • Your progress saves automatically
-        </p>
       </div>
     </PageShell>
   );

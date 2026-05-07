@@ -2,6 +2,8 @@
 // All calls are safe no-ops when the browser APIs are unavailable (e.g. SSR,
 // older Android WebView) so no try/catch is needed at the call sites.
 
+import { useSettingsStore } from "@/store/useSettingsStore";
+
 // ─── Speech Synthesis ──────────────────────────────────────────────────────
 
 let preferredVoice: SpeechSynthesisVoice | null = null;
@@ -61,7 +63,7 @@ function pickVoice(): SpeechSynthesisVoice | null {
 
 export interface SpeakOptions {
   pitch?: number; // default 1.05  — warmer, less robotic
-  rate?: number;  // default 0.88  — measured African English cadence
+  rate?: number; // default 0.88  — measured African English cadence
 }
 
 // Many browsers block audio until a user gesture happens. We "unlock" audio
@@ -112,11 +114,12 @@ export function speak(text: string, opts: SpeakOptions = {}): void {
   utt.lang = preferredVoice?.lang ?? "en-GB";
   // Slightly lower pitch + slightly faster rate reads less “posh” on many devices.
   utt.pitch = opts.pitch ?? 1.0;
-  utt.rate  = opts.rate  ?? 0.92;
+  utt.rate = opts.rate ?? 0.92;
   speechSynthesis.speak(utt);
 }
 
 export async function narrate(text: string, opts: SpeakOptions = {}): Promise<void> {
+  if (!useSettingsStore.getState().soundOn) return;
   const mode = (import.meta.env.VITE_TTS_MODE || "browser") as "browser" | "remote";
   if (mode === "remote") {
     try {
@@ -221,6 +224,7 @@ const SFX: Record<"success" | "click" | "error" | "coin", () => void> = {
 
 export function playSfx(name: "success" | "click" | "error" | "coin"): void {
   try {
+    if (!useSettingsStore.getState().soundOn) return;
     SFX[name]?.();
   } catch {
     // AudioContext blocked before user gesture — silent

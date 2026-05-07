@@ -1,9 +1,6 @@
 import type { Attempt } from "@/services/db";
 
-export function getAttemptsForChallenge(
-  attempts: Attempt[],
-  challengeId: string,
-): Attempt[] {
+export function getAttemptsForChallenge(attempts: Attempt[], challengeId: string): Attempt[] {
   return attempts.filter((a) => a.challengeId === challengeId);
 }
 
@@ -35,4 +32,3 @@ export function getEfficiency(attempts: Attempt[], challengeId: string): number 
   const totalMoves = recent.reduce((sum, a) => sum + a.movesUsed, 0);
   return totalMoves / recent.length;
 }
-

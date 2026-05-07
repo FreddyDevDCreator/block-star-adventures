@@ -34,7 +34,11 @@ export function SoundToggle({ className }: SoundToggleProps) {
         className,
       )}
     >
-      {soundOn ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+      {soundOn ? (
+        <Volume2 className="w-5 h-5" aria-hidden="true" />
+      ) : (
+        <VolumeX className="w-5 h-5" aria-hidden="true" />
+      )}
     </button>
   );
 }

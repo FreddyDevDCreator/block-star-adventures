@@ -7,7 +7,7 @@ import require$$1$1 from "crypto";
 import require$$0$1 from "stream";
 import require$$5 from "url";
 import require$$3 from "zlib";
-import { b as getAugmentedNamespace } from "./react.mjs";
+import { d as getAugmentedNamespace } from "./react.mjs";
 import require$$0 from "buffer";
 var bufferUtil = { exports: {} };
 var constants;

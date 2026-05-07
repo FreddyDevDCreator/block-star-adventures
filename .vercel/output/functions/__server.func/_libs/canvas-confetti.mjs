@@ -692,8 +692,8 @@ var module$1 = {};
   }
   return this || {};
 })(), module$1, false);
-const confetti = module$1.exports;
+const confetti_module = module$1.exports;
 module$1.exports.create;
 export {
-  confetti as c
+  confetti_module as default
 };

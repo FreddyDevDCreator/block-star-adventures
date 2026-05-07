@@ -15,7 +15,9 @@ export function StatChip({ icon, label, value, className }: StatChipProps) {
         className,
       )}
     >
-      <span className="text-xl">{icon}</span>
+      <span className="text-xl" aria-hidden="true">
+        {icon}
+      </span>
       <div className="leading-tight">
         <div className="text-xs text-muted-foreground font-medium">{label}</div>
         <div className="font-bold text-foreground">{value}</div>

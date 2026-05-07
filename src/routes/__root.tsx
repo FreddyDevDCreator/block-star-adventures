@@ -48,10 +48,24 @@ export const Route = createRootRoute({
       { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Block Star Adventures" },
       { name: "twitter:title", content: "Block Star Adventures" },
-      { property: "og:description", content: "Learn coding with Bolt — from Africa’s sky to the Moon." },
-      { name: "twitter:description", content: "Learn coding with Bolt — from Africa’s sky to the Moon." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f272e686-36d6-47cf-ae9f-dccdfb27f221/id-preview-99ca6ff5--7f0f520c-58bb-423a-81df-49561f94478f.lovable.app-1777298234508.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f272e686-36d6-47cf-ae9f-dccdfb27f221/id-preview-99ca6ff5--7f0f520c-58bb-423a-81df-49561f94478f.lovable.app-1777298234508.png" },
+      {
+        property: "og:description",
+        content: "Learn coding with Bolt — from Africa’s sky to the Moon.",
+      },
+      {
+        name: "twitter:description",
+        content: "Learn coding with Bolt — from Africa’s sky to the Moon.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f272e686-36d6-47cf-ae9f-dccdfb27f221/id-preview-99ca6ff5--7f0f520c-58bb-423a-81df-49561f94478f.lovable.app-1777298234508.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/f272e686-36d6-47cf-ae9f-dccdfb27f221/id-preview-99ca6ff5--7f0f520c-58bb-423a-81df-49561f94478f.lovable.app-1777298234508.png",
+      },
     ],
     links: [
       {
@@ -80,7 +94,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  const locationKey = useRouterState({ select: (s) => s.location.key });
+  const locationKey = useRouterState({ select: (s) => s.location.href });
   const soundOn = useSettingsStore((s) => s.soundOn);
 
   useEffect(() => {

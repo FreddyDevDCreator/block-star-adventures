@@ -15,7 +15,13 @@ interface GridSimProps {
 
 const STEP_MS = 250;
 
-export function GridSim({ size = 4, trail, goal, animating = false, onAnimationEnd }: GridSimProps) {
+export function GridSim({
+  size = 4,
+  trail,
+  goal,
+  animating = false,
+  onAnimationEnd,
+}: GridSimProps) {
   // visibleUpTo tracks how many trail positions have been revealed.
   // Start at 1 (the starting position) when not animating; starts at 1 and
   // counts up when animating.
@@ -55,8 +61,7 @@ export function GridSim({ size = 4, trail, goal, animating = false, onAnimationE
         intervalRef.current = null;
       }
     };
-  // Only re-run when trail reference or animating flag changes
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Only re-run when trail reference or animating flag changes
   }, [trail, animating]);
 
   const visibleTrail = trail.slice(0, visibleUpTo);
@@ -78,11 +83,13 @@ export function GridSim({ size = 4, trail, goal, animating = false, onAnimationE
           isRocket ? "scale-110" : "",
         ].join(" ")}
       >
-        {isRocket
-          ? <span className={animating ? "animate-[bob_0.5s_ease-in-out_infinite]" : ""}>🚀</span>
-          : isGoal
-          ? "🌙"
-          : ""}
+        {isRocket ? (
+          <span className={animating ? "animate-[bob_0.5s_ease-in-out_infinite]" : ""}>🚀</span>
+        ) : isGoal ? (
+          "🌙"
+        ) : (
+          ""
+        )}
       </div>
     );
   });

@@ -1,4 +1,4 @@
-import { b as getAugmentedNamespace } from "./react.mjs";
+import { d as getAugmentedNamespace } from "./react.mjs";
 import { f as fastPathLookup, r as resetResult, p as parseImpl, g as getEmptyResult } from "./tldts-core.mjs";
 const exceptions = /* @__PURE__ */ (function() {
   const _0 = [1, {}], _1 = [2, {}], _2 = [0, { "city": _0 }];

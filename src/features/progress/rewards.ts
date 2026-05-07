@@ -27,10 +27,7 @@ function uniq(list: string[]): string[] {
  * - Returns the "delta to award now": primarily the reward for the FIRST success.
  *   (Subsequent successes return 0 xp/coins, but can still grant new badges.)
  */
-export function computeReward(
-  attempts: Attempt[],
-  challengeId: string,
-): ComputedReward {
+export function computeReward(attempts: Attempt[], challengeId: string): ComputedReward {
   const list = attempts.filter((a) => a.challengeId === challengeId);
   if (list.length === 0) return { xp: 0, coins: 0, badges: [] };
 
@@ -82,4 +79,3 @@ export function computeReward(
 
   return { xp, coins, badges: uniq(badges) };
 }
-

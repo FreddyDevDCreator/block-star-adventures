@@ -73,7 +73,10 @@ export async function loadProfile(): Promise<UserProfile> {
   if (!data) return defaultProfile;
   // Back-compat: older profiles may be missing newer fields.
   // Also migrate older `attempts` formats into the new append-only Attempt[] log.
-  const migratedAttempts = Array.isArray((data as any).attempts) ? (data as any).attempts : [];
+  const migratedAttemptsRaw = (data as { attempts?: unknown }).attempts;
+  const migratedAttempts = Array.isArray(migratedAttemptsRaw)
+    ? (migratedAttemptsRaw as Attempt[])
+    : [];
   return {
     ...defaultProfile,
     ...data,

@@ -10,7 +10,7 @@ import { r as requireHtmlEncodingSniffer } from "./html-encoding-sniffer.mjs";
 import { r as requireWhatwgUrl, a as requireWebidl2jsWrapper } from "./whatwg-url.mjs";
 import { r as requireWhatwgEncoding } from "./whatwg-encoding.mjs";
 import { r as requireMimeType$1 } from "./whatwg-mimetype.mjs";
-import { b as getAugmentedNamespace, c as commonjsGlobal } from "./react.mjs";
+import { d as getAugmentedNamespace, c as commonjsGlobal } from "./react.mjs";
 import { r as requireLib$1 } from "./webidl-conversions.mjs";
 import { r as requireCSSStyleDeclaration } from "./cssstyle.mjs";
 import { r as requireLib } from "./rrweb-cssom.mjs";
