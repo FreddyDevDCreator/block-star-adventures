@@ -8,7 +8,7 @@ import tailwindcss from "@tailwindcss/vite";
 // Nitro is only needed for production builds (Vercel output).
 // In dev, enabling Nitro can break the Vite environment runner with:
 // "Vite environment \"nitro\" is unavailable".
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, isSsrBuild }) => ({
   plugins: [
     tsconfigPaths(),
     tailwindcss(),
@@ -16,4 +16,15 @@ export default defineConfig(({ command }) => ({
     ...(command === "build" ? [nitro({ preset: "vercel" })] : []),
     react(),
   ],
+  build: isSsrBuild
+    ? {
+        rollupOptions: {
+          output: {
+            // Vercel sometimes omits SSR split chunks from the function bundle.
+            // Inlining dynamic imports ensures SSR is self-contained.
+            inlineDynamicImports: true,
+          },
+        },
+      }
+    : undefined,
 }));
