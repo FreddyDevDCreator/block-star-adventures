@@ -238,9 +238,9 @@ function AdminDashboard() {
 
             <TabsContent value="overview">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
-                <Kpi title="Users" value={summary?.totals?.users ?? 0} />
-                <Kpi title="Lessons" value={summary?.totals?.lessons ?? 0} />
-                <Kpi title="Rewards" value={summary?.totals?.rewards ?? 0} />
+                <Kpi title="Users" value={summary?.totals?.users ?? summary?.recentUsers?.length ?? 0} />
+                <Kpi title="Lessons" value={summary?.totals?.lessons ?? summary?.lessons?.length ?? 0} />
+                <Kpi title="Rewards" value={summary?.totals?.rewards ?? summary?.rewards?.length ?? 0} />
               </div>
 
               <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-3">

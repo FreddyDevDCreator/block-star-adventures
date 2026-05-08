@@ -44,9 +44,28 @@ export function setAuthToken(token: string | null) {
   else window.localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
 }
 
+function resolveApiUrl(path: string) {
+  // If API_BASE_URL is absolute, just use it.
+  if (/^https?:\/\//i.test(API_BASE_URL)) return `${API_BASE_URL}${path}`;
+
+  // Browser can handle relative URLs.
+  if (typeof window !== "undefined") return `${API_BASE_URL}${path}`;
+
+  // SSR (Vercel Node): fetch() needs an absolute URL.
+  const vercelUrl = process.env.VERCEL_URL || process.env.URL;
+  if (vercelUrl) {
+    const origin = vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`;
+    return `${origin}${API_BASE_URL}${path}`;
+  }
+
+  // Fallback for non-Vercel SSR environments.
+  const fallbackOrigin = process.env.ORIGIN || "http://localhost:3000";
+  return `${fallbackOrigin}${API_BASE_URL}${path}`;
+}
+
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getAuthToken();
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetch(resolveApiUrl(path), {
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
