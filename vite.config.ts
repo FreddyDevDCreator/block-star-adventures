@@ -16,6 +16,16 @@ export default defineConfig(({ command, isSsrBuild }) => ({
     ...(command === "build" ? [nitro({ preset: "vercel" })] : []),
     react(),
   ],
+  server: {
+    proxy: {
+      // Local dev: avoid browser CORS by proxying same-origin /api → backend
+      "/api": {
+        target: "https://myschoolprojectbackend.onrender.com",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
   build: isSsrBuild
     ? {
         rollupOptions: {

@@ -19,6 +19,13 @@ const AVATARS: Array<{ id: string; label: string; emoji: string }> = [
   { id: "drum", label: "Drum", emoji: "🥁" },
   { id: "book", label: "Book", emoji: "📘" },
   { id: "ball", label: "Ball", emoji: "⚽" },
+  { id: "robot", label: "Robot", emoji: "🤖" },
+  { id: "fox", label: "Fox", emoji: "🦊" },
+  { id: "cat", label: "Cat", emoji: "🐱" },
+  { id: "owl", label: "Owl", emoji: "🦉" },
+  { id: "butterfly", label: "Butterfly", emoji: "🦋" },
+  { id: "comet", label: "Comet", emoji: "☄️" },
+  { id: "planet", label: "Planet", emoji: "🪐" },
 ];
 
 export const Route = createFileRoute("/onboarding")({
@@ -97,6 +104,12 @@ function OnboardingPage() {
     const hero = nameTrimmed || "Explorer";
     return base.replaceAll("{name}", hero).replaceAll("{hero}", hero);
   }, [current?.message, nameTrimmed]);
+
+  const storyTitle = useMemo(() => {
+    const base = current?.title ?? "";
+    const hero = nameTrimmed || "Explorer";
+    return base.replaceAll("{name}", hero).replaceAll("{hero}", hero);
+  }, [current?.title, nameTrimmed]);
 
   const speakText = useMemo(() => {
     if (isNameStep) return "Hi! What’s your name, hero?";
@@ -224,7 +237,7 @@ function OnboardingPage() {
           ) : (
             <SpeechBubble arrow="bottom" className="w-full" speak speakText={speakText}>
               <div className="text-3xl mb-1">{current?.emoji}</div>
-              <h1 className="text-2xl font-extrabold">{current?.title}</h1>
+              <h1 className="text-2xl font-extrabold">{storyTitle}</h1>
               <p className="text-muted-foreground mt-1">{storyMessage}</p>
             </SpeechBubble>
           )}
@@ -243,18 +256,7 @@ function OnboardingPage() {
 
           <div className="flex gap-3 w-full">
             <BigButton
-              variant="ghost"
               className="flex-1"
-              onClick={() => {
-                playClick();
-                finish();
-              }}
-              icon={<SkipForward className="w-5 h-5" />}
-            >
-              Skip
-            </BigButton>
-            <BigButton
-              className="flex-[2]"
               onClick={
                 isNameStep
                   ? () => {

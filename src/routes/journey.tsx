@@ -130,7 +130,7 @@ function JourneyPage() {
 
               return (
                 <li key={`${lvl.lessonId}:${lvl.challengeId}`} className="relative">
-                  <div className="absolute left-0 top-4 w-11 h-11 grid place-items-center">
+                  <div className="absolute left-5 top-4 w-11 h-11 grid place-items-center">
                     <div
                       className={[
                         "w-11 h-11 rounded-2xl border-2 grid place-items-center",

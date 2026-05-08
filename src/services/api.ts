@@ -14,7 +14,8 @@ export async function fetchLessonManifest(): Promise<{ version: string }> {
   return { version: "1.0.0" };
 }
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// Use same-origin by default (pairs with Vercel/Vite proxy for /api).
+export const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 export class ApiError extends Error {
   status: number;
