@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { consumeQueuedNarration } from "@/services/narrationQueue";
 import { narrate } from "@/services/audio";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
@@ -87,6 +88,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Toaster />
         <Scripts />
       </body>
     </html>

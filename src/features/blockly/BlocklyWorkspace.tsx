@@ -1,18 +1,15 @@
-// Lazy-loaded Blockly workspace. Imported via React.lazy so the Blockly
-// bundle only ships when the user actually opens a coding challenge.
+
 import { useEffect, useRef } from "react";
 import * as Blockly from "blockly";
 import { javascriptGenerator } from "blockly/javascript";
 import { TOOLBOX } from "./toolbox";
 
-// The "When Run is pressed" hat block — purely a visual anchor, emits no code.
-// Movement blocks connect under it so kids understand what counts as a program.
+
 const DEFAULT_WORKSPACE_XML = `
 <xml xmlns="https://developers.google.com/blockly/xml">
   <block type="on_start" x="20" y="20" deletable="false" movable="true"></block>
 </xml>`.trim();
 
-// Define our movement blocks + on_start hat once, on first import.
 let blocksRegistered = false;
 function registerBlocks() {
   if (blocksRegistered) return;
@@ -28,11 +25,9 @@ function registerBlocks() {
       this.setHelpUrl("");
     },
   };
-  // Hat block emits nothing — movement blocks below it emit the real code.
-  // Must use forBlock (Blockly v10+ API) — direct property assignment is ignored.
+
   javascriptGenerator.forBlock["on_start"] = () => "";
 
-  // ── 4 movement blocks ────────────────────────────────────────────────────
   const moves: Array<[string, string, string, () => string]> = [
     ["move_right", "Move ▶", "#3b82f6", () => "moveRight();\n"],
     ["move_up", "Move ▲", "#10b981", () => "moveUp();\n"],
@@ -49,7 +44,6 @@ function registerBlocks() {
         this.setColour(color);
       },
     };
-    // forBlock is the Blockly v10 documented API for generator registration.
     javascriptGenerator.forBlock[name] = gen;
   }
 }
