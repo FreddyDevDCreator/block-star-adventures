@@ -6,7 +6,7 @@ export interface OnboardingStep {
 
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
-    title: "Eiii, welcome!",
+    title: "{name}, welcome!",
     message:
       "I’m Bolt — your rocket buddy! Today we’re helping learn to code with Bolt. Ready to take your first flight across Africa’s sky?",
     emoji: "👋",

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Star avatar">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe066"/>
+      <stop offset="100%" stop-color="#ffb703"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="32" fill="#14213d"/>
+  <circle cx="64" cy="64" r="40" fill="url(#g)" opacity="0.2"/>
+  <path d="M64 24 73 50l27 1-21 17 8 26-23-15-23 15 8-26-21-17 27-1Z" fill="#fff4c2"/>
+  <path d="M64 33 71 53l21 1-16 13 6 20-18-12-18 12 6-20-16-13 21-1Z" fill="#ffcf4d"/>
+  <path d="M64 43 68 55l13 1-10 8 4 12-11-7-11 7 4-12-10-8 13-1Z" fill="#fff" opacity="0.55"/>
+</svg>

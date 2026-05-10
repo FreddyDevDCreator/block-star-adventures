@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Book avatar">
+  <rect width="128" height="128" rx="32" fill="#123"/>
+  <path d="M32 38c0-5 4-9 9-9h19c6 0 11 5 11 11v51c0-6-5-11-11-11H41c-5 0-9 4-9 9V38Z" fill="#60a5fa"/>
+  <path d="M96 38c0-5-4-9-9-9H68c-6 0-11 5-11 11v51c0-6 5-11 11-11h18c5 0 9 4 9 9V38Z" fill="#93c5fd"/>
+  <path d="M64 40v48" stroke="#fff" stroke-width="4" opacity="0.8"/>
+  <path d="M41 47h14M41 56h12M41 65h10" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  <path d="M73 47h14M73 56h12M73 65h10" stroke="#123" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+</svg>

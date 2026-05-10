@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Rocket avatar">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffd166"/>
+      <stop offset="100%" stop-color="#ff6b6b"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="32" fill="#10203f"/>
+  <circle cx="64" cy="64" r="42" fill="url(#g)" opacity="0.22"/>
+  <path d="M64 26c10 7 20 20 20 36 0 17-9 30-20 38-11-8-20-21-20-38 0-16 10-29 20-36Z" fill="#ffffff"/>
+  <path d="M64 40c7 5 13 14 13 24 0 10-5 18-13 24-8-6-13-14-13-24 0-10 6-19 13-24Z" fill="#5bc0ff"/>
+  <path d="M49 66 33 78v12h16l9-10Z" fill="#ff9f1c"/>
+  <path d="M79 66 95 78v12H79l-9-10Z" fill="#ff9f1c"/>
+  <path d="M64 88c7 10 8 15 8 20H56c0-5 1-10 8-20Z" fill="#ffd166"/>
+  <circle cx="64" cy="56" r="8" fill="#10203f"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Lion avatar">
+  <rect width="128" height="128" rx="32" fill="#3f2c1c"/>
+  <circle cx="64" cy="64" r="42" fill="#ffb84d"/>
+  <circle cx="64" cy="64" r="28" fill="#ffd89b"/>
+  <circle cx="52" cy="60" r="4" fill="#3f2c1c"/>
+  <circle cx="76" cy="60" r="4" fill="#3f2c1c"/>
+  <path d="M58 72c3 4 9 4 12 0" fill="none" stroke="#3f2c1c" stroke-width="4" stroke-linecap="round"/>
+  <path d="M30 48c6-12 16-20 34-20s28 8 34 20l-14 4-8-10-8 12-14-10-14 10-8-12-8 10Z" fill="#ff9f1c"/>
+  <path d="M28 78c8 10 18 16 36 16s28-6 36-16l-12-4-10 8-14-10-14 10-10-8-12 4Z" fill="#ff9f1c" opacity="0.9"/>
+</svg>

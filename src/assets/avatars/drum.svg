@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Drum avatar">
+  <rect width="128" height="128" rx="32" fill="#0f172a"/>
+  <ellipse cx="64" cy="44" rx="30" ry="14" fill="#f59e0b"/>
+  <path d="M34 44v28c0 8 13 14 30 14s30-6 30-14V44" fill="#f97316"/>
+  <ellipse cx="64" cy="72" rx="30" ry="14" fill="#fb923c"/>
+  <path d="M44 24 49 27 61 55 56 58Z" fill="#fde68a"/>
+  <path d="M84 24 79 27 67 55 72 58Z" fill="#fde68a"/>
+  <ellipse cx="52" cy="44" rx="4" ry="2" fill="#fff7ed" opacity="0.8"/>
+  <ellipse cx="76" cy="44" rx="4" ry="2" fill="#fff7ed" opacity="0.8"/>
+</svg>

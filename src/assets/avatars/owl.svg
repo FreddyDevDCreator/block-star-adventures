@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Owl avatar">
+  <rect width="128" height="128" rx="32" fill="#1e1b4b"/>
+  <path d="M40 42c6-12 16-18 24-18s18 6 24 18l-6 44c0 10-7 18-18 18H64c-11 0-18-8-18-18Z" fill="#a78bfa"/>
+  <circle cx="50" cy="58" r="12" fill="#fff"/>
+  <circle cx="78" cy="58" r="12" fill="#fff"/>
+  <circle cx="50" cy="58" r="5" fill="#1e1b4b"/>
+  <circle cx="78" cy="58" r="5" fill="#1e1b4b"/>
+  <path d="M64 66 58 76h12Z" fill="#fbbf24"/>
+  <path d="M48 84c5 4 27 4 32 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+</svg>

@@ -1,19 +1,20 @@
 import { cn } from "@/lib/utils";
+import { AVATAR_IMAGE_BY_ID } from "@/features/onboarding/avatarOptions";
 
-const AVATAR_MAP: Record<string, { emoji: string; bg: string }> = {
-  rocket: { emoji: "🚀", bg: "bg-[image:var(--gradient-primary)]" },
-  star: { emoji: "⭐", bg: "bg-[image:var(--gradient-sunshine)]" },
-  lion: { emoji: "🦁", bg: "bg-amber-500/15" },
-  drum: { emoji: "🥁", bg: "bg-primary/10" },
-  book: { emoji: "📘", bg: "bg-sky-500/15" },
-  ball: { emoji: "⚽", bg: "bg-emerald-500/15" },
-  robot: { emoji: "🤖", bg: "bg-indigo-500/10" },
-  fox: { emoji: "🦊", bg: "bg-orange-400/10" },
-  cat: { emoji: "🐱", bg: "bg-pink-400/10" },
-  owl: { emoji: "🦉", bg: "bg-violet-400/10" },
-  butterfly: { emoji: "🦋", bg: "bg-rose-300/10" },
-  comet: { emoji: "☄️", bg: "bg-sky-600/10" },
-  planet: { emoji: "🪐", bg: "bg-cyan-600/10" },
+const AVATAR_BACKGROUNDS: Record<string, string> = {
+  rocket: "bg-[image:var(--gradient-primary)]",
+  star: "bg-[image:var(--gradient-sunshine)]",
+  lion: "bg-amber-500/15",
+  drum: "bg-primary/10",
+  book: "bg-sky-500/15",
+  ball: "bg-emerald-500/15",
+  robot: "bg-indigo-500/10",
+  fox: "bg-orange-400/10",
+  cat: "bg-pink-400/10",
+  owl: "bg-violet-400/10",
+  butterfly: "bg-rose-300/10",
+  comet: "bg-sky-600/10",
+  planet: "bg-cyan-600/10",
 };
 
 export function UserAvatar({
@@ -25,7 +26,8 @@ export function UserAvatar({
   size?: "sm" | "md" | "lg";
   className?: string;
 }) {
-  const a = AVATAR_MAP[avatarId ?? ""] ?? AVATAR_MAP.rocket;
+  const avatarKey = avatarId && AVATAR_IMAGE_BY_ID[avatarId] ? avatarId : "rocket";
+  const src = AVATAR_IMAGE_BY_ID[avatarKey];
   const sizes = {
     sm: "w-10 h-10 text-xl",
     md: "w-12 h-12 text-2xl",
@@ -36,14 +38,20 @@ export function UserAvatar({
     <div
       className={cn(
         "rounded-2xl border-2 border-border grid place-items-center shadow-sm",
-        a.bg,
+        AVATAR_BACKGROUNDS[avatarKey],
         sizes[size],
         className,
       )}
       aria-label="Your avatar"
       title="Your avatar"
     >
-      <span className="leading-none">{a.emoji}</span>
+      <img
+        src={src}
+        alt=""
+        aria-hidden="true"
+        className="h-full w-full rounded-[inherit] object-cover"
+        draggable={false}
+      />
     </div>
   );
 }

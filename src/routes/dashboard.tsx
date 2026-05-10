@@ -343,7 +343,10 @@ function Dashboard() {
                           {l.summary}
                         </div>
                       </div>
-                      <Play className="w-5 h-5 text-primary shrink-0 self-center" aria-hidden="true" />
+                      <Play
+                        className="w-5 h-5 text-primary shrink-0 self-center"
+                        aria-hidden="true"
+                      />
                     </Link>
                   </li>
                 ))}

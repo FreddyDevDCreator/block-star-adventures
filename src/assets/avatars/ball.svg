@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Ball avatar">
+  <rect width="128" height="128" rx="32" fill="#052e16"/>
+  <circle cx="64" cy="64" r="40" fill="#f8fafc"/>
+  <path d="M64 36 76 45 72 60H56l-4-15Z" fill="#111827"/>
+  <path d="M56 60 45 68l4 15 15 9 15-9 4-15-11-8Z" fill="#111827"/>
+  <path d="M64 36c-8 5-15 12-20 20l12 4" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round"/>
+  <path d="M72 60c11 0 18 8 20 20" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round"/>
+</svg>

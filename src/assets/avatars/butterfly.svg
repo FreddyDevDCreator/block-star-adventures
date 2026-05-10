@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Butterfly avatar">
+  <rect width="128" height="128" rx="32" fill="#2f0f2f"/>
+  <path d="M64 62c-7-14-18-22-30-22-7 0-12 5-12 13 0 18 16 32 36 32 4 0 7-1 10-3-2-9-3-13-4-20Z" fill="#fb7185"/>
+  <path d="M64 62c7-14 18-22 30-22 7 0 12 5 12 13 0 18-16 32-36 32-4 0-7-1-10-3 2-9 3-13 4-20Z" fill="#c084fc"/>
+  <rect x="60" y="44" width="8" height="40" rx="4" fill="#f8fafc"/>
+  <circle cx="58" cy="40" r="4" fill="#f8fafc"/>
+  <circle cx="70" cy="40" r="4" fill="#f8fafc"/>
+</svg>

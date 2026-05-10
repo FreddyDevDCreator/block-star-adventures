@@ -5,28 +5,13 @@ import { SpeechBubble } from "@/components/cq/SpeechBubble";
 import { BigButton } from "@/components/cq/BigButton";
 import { SoundToggle } from "@/components/cq/SoundToggle";
 import { ONBOARDING_STEPS } from "@/features/onboarding/steps";
+import { AVATAR_OPTIONS } from "@/features/onboarding/avatarOptions";
 import { useUserStore } from "@/store/useUserStore";
 import { createUser } from "@/services/users";
-import { ChevronRight, SkipForward } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { PageShell } from "@/components/cq/PageShell";
 import { playSfx, unlockAudio } from "@/services/audio";
-
-const AVATARS: Array<{ id: string; label: string; emoji: string }> = [
-  { id: "rocket", label: "Rocket", emoji: "🚀" },
-  { id: "star", label: "Star", emoji: "⭐" },
-  { id: "lion", label: "Lion", emoji: "🦁" },
-  { id: "drum", label: "Drum", emoji: "🥁" },
-  { id: "book", label: "Book", emoji: "📘" },
-  { id: "ball", label: "Ball", emoji: "⚽" },
-  { id: "robot", label: "Robot", emoji: "🤖" },
-  { id: "fox", label: "Fox", emoji: "🦊" },
-  { id: "cat", label: "Cat", emoji: "🐱" },
-  { id: "owl", label: "Owl", emoji: "🦉" },
-  { id: "butterfly", label: "Butterfly", emoji: "🦋" },
-  { id: "comet", label: "Comet", emoji: "☄️" },
-  { id: "planet", label: "Planet", emoji: "🪐" },
-];
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
@@ -160,7 +145,7 @@ function OnboardingPage() {
               <h1 className="text-2xl font-extrabold">Pick your avatar</h1>
               <p className="text-muted-foreground mt-1">Choose a badge for your crew card.</p>
               <div className="mt-4 grid grid-cols-3 gap-2">
-                {AVATARS.map((a) => {
+                {AVATAR_OPTIONS.map((a) => {
                   const active = avatar === a.id;
                   return (
                     <button
@@ -173,7 +158,7 @@ function OnboardingPage() {
                       aria-pressed={active}
                       aria-label={`Choose avatar: ${a.label}`}
                       className={[
-                        "rounded-2xl border-2 p-3 min-h-14 font-extrabold transition-colors",
+                        "rounded-2xl border-2 p-2 min-h-14 transition-colors",
                         "bg-card",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                         active
@@ -181,7 +166,13 @@ function OnboardingPage() {
                           : "border-border hover:border-primary/60",
                       ].join(" ")}
                     >
-                      <div className="text-2xl">{a.emoji}</div>
+                      <img
+                        src={a.src}
+                        alt=""
+                        aria-hidden="true"
+                        className="mx-auto h-16 w-16 rounded-2xl object-cover shadow-sm"
+                        draggable={false}
+                      />
                       <div className="mt-1 text-xs text-muted-foreground font-bold">{a.label}</div>
                     </button>
                   );
